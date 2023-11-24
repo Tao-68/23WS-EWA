@@ -13,6 +13,10 @@
         "optionHawaii" => "Hawaii Pizza"
     ];
 
+<<<<<<< HEAD
+=======
+    // Generate a unique order ID
+>>>>>>> main
     $orderId = "Order#" . uniqid();
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
