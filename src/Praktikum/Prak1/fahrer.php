@@ -15,7 +15,7 @@ echo <<<FAHRER
         <input type="radio" id="fertig" name="FahrerStatus" value="fertig">
         <label for="fertig">Fertig</label>
         <br>
-        <input type="radio" id="unterwegs" name="FahrerStatus" value="unterwegs">
+        <input type="radio" id="fertig" name="FahrerStatus" value="unterwegs">
         <label for="unterwegs">Unterwegs</label>
         <br>
         <input type="radio" id="geliefert" name="FahrerStatus" value="geliefert">
