@@ -1,26 +1,29 @@
+<?php
+echo <<<FAHRER
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="../images/favicon.ico">
-    <title>Driver</title>
+    <meta charset="UTF-8"/>
+    <title>Fahrer</title>
 </head>
 <body>
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_POST["orderId"]) && !empty($_POST["orderId"])) {
-            $orderId = $_POST["orderId"];
-            echo "<h2>Deliveries to Deliver:</h2>";
-            echo "<p>Order ID: $orderId</p>";
-
-            if (isset($_POST["customerAddress"]) && !empty($_POST["customerAddress"])) {
-                $customerAddress = $_POST["customerAddress"];
-                echo "<p>Customer Address: $customerAddress</p>";
-            }
-        } else {
-            echo "<h1>No deliveries to deliver yet.</h1>";
-        }
-    }
-    ?>
+<section id="Bestellungen">
+    <form action="https://echo.fbi.h-da.de/" id="FahrerStatus" method="post">
+        <p>Order ID: Order#2442</p>
+        <p>Adresse: Darmstadt 123 </p>
+        <p>Status:</p>
+        <input type="radio" id="fertig" name="FahrerStatus" value="fertig">
+        <label for="fertig">Fertig</label>
+        <br>
+        <input type="radio" id="unterwegs" name="FahrerStatus" value="unterwegs">
+        <label for="unterwegs">Unterwegs</label>
+        <br>
+        <input type="radio" id="geliefert" name="FahrerStatus" value="geliefert">
+        <label for="geliefert">Geliefert</label>
+        <br>
+        <input type="submit" value="OK">
+    </form>
+</section>
 </body>
 </html>
+FAHRER;
