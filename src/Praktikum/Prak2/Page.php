@@ -49,7 +49,7 @@ abstract class Page
     {
         error_reporting(E_ALL);
 
-        $this->_database = new MySQLi("mariadb", "public", "public", "pizzaservice_2020");
+        $this->_database = new MySQLi("mariadb", "public", "public", "pizzaservice");
 
 
         //$this->_database = new MySQLi("localhost", "public", "public", "pizzaservice_2020");

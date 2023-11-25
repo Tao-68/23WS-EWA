@@ -29,7 +29,7 @@ require_once './Page.php';
  * @author   Bernhard Kreling, <bernhard.kreling@h-da.de> 
  * @author   Ralf Hahn, <ralf.hahn@h-da.de> 
  */
-class Bestellung extends Page
+class PageTemplate extends Page
 {
     // to do: declare reference variables for members 
     // representing substructures/blocks
@@ -82,7 +82,7 @@ class Bestellung extends Page
     protected function generateView() 
     {
         $this->getViewData();
-        $this->generatePageHeader('Bestellung');
+        $this->generatePageHeader('to do: change headline');
         // to do: call generateView() for all members
         // to do: output view of this page
         $this->generatePageFooter();
@@ -118,7 +118,7 @@ class Bestellung extends Page
     public static function main() 
     {
         try {
-            $page = new Bestellung();
+            $page = new PageTemplate();
             $page->processReceivedData();
             $page->generateView();
         }
