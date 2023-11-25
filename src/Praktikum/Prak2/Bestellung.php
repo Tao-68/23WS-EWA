@@ -13,35 +13,6 @@ class Bestellung extends Page
         parent::__destruct();
     }
 
-    protected function processReceivedData()
-    {
-        parent::processReceivedData();
-
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') 
-        {
-            return;
-        }
-
-        if (isset($_POST['warenkorb']) && is_array($_POST['warenkorb']))
-        {
-            $warenkorb = $_POST['warenkorb'];
-        } 
-        else 
-        {
-            return;
-        }
-
-        if (isset($_POST['address']) && is_string($_POST['address'])) 
-        {
-            $address = $_POST['address'];
-        }
-        else
-        {
-            return;
-        }
-        header('Location: http://localhost/Praktikum/Prak2/Bestellung.php');
-    }
-
     protected function getViewData()
     {
         $sql = "SELECT * FROM article";
@@ -55,6 +26,7 @@ class Bestellung extends Page
             $articles[] = $row;
         }
         $result->free();
+        //print_r($articles);
         return $articles;
     }
 
@@ -79,21 +51,6 @@ class Bestellung extends Page
         $this->generatePageFooter();
     }
 
-    public static function main()
-    {
-        try 
-        {
-            $page = new Bestellung();
-            $page->processReceivedData();
-            $page->generateView();
-        } 
-        catch (Exception $e) 
-        {
-            header("Content-type: text/plain; charset=UTF-8");
-            echo $e->getMessage();
-        }
-    }
-    
     protected function pizzaSelection(array $articles)
     {
         echo "<form action='Bestellung.php' method='post'>";
@@ -118,6 +75,98 @@ class Bestellung extends Page
         </div>
         </form>
     EOT;
+    }
+
+    protected function processReceivedData()
+    {
+        parent::processReceivedData();
+
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') 
+        {
+            return;
+        }
+
+        if (isset($_POST['warenkorb']) && is_array($_POST['warenkorb']))
+        {
+            $warenkorb = $_POST['warenkorb'];
+           // print_r($warenkorb);
+        } 
+        else 
+        {
+            return;
+        }
+
+        if (isset($_POST['address']) && is_string($_POST['address'])) 
+        {
+            $address = $_POST['address'];
+        }
+        else
+        {
+            return;
+        }
+
+        try
+        {
+            foreach($warenkorb as $individual_order)
+            {
+                $ordering_id = rand(1, 1000);
+                $this->insertIntoOrdering($ordering_id, $address);
+                $this->insertIntoOrdered($individual_order, $ordering_id);
+            }
+        
+        } 
+        catch (Exception $e)
+        {
+            echo $e->getMessage();
+            exit;
+        }
+
+        header('Location: http://localhost/Praktikum/Prak2/Bestellung.php');
+    }
+
+    protected function insertIntoOrdered(string $orderItem, int $ordering_id)
+    {
+        $sqlOrderedArticle = "INSERT INTO ordered_article (ordered_article_id, ordering_id, article_id, status) VALUES (?, ?, ?, 0)";
+        $stmtOrderedArticle = $this->_database->prepare($sqlOrderedArticle);    
+        if (!$stmtOrderedArticle) 
+        {
+            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
+        }
+
+        $ordered_article_id = rand(1, 1000);
+        $stmtOrderedArticle->bind_param("iii", $ordered_article_id, $ordering_id, $orderItem); //using $orderItem works because when we submitted the form, we submitted an array of the field "value" ("<option  value={$article['article_id']}>") which was assigned as numbers up above
+        $stmtOrderedArticle->execute();
+
+        $stmtOrderedArticle->close();
+    }
+
+    protected function insertIntoOrdering(int $ordering_id, string $address)
+    {
+        $sqlOrdering = "INSERT INTO ordering (ordering_id, address, ordering_time) VALUES (?, ?, NOW())";
+        $stmtOrdering = $this->_database->prepare($sqlOrdering);
+        if (!$stmtOrdering) 
+        {
+            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
+        }
+
+        $stmtOrdering->bind_param("is", $ordering_id, $address);
+        $stmtOrdering->execute();
+        $stmtOrdering->close();
+    }
+
+
+    public static function main()
+    {
+        try 
+        {
+            $page = new Bestellung();
+            $page->processReceivedData();
+            $page->generateView();
+        } 
+        catch (Exception $e) 
+        {
+            echo $e->getMessage();
+        }
     }
 }
 
