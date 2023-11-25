@@ -1,4 +1,4 @@
-<?php // UTF-8 marker äöüÄÖÜß€
+<?php
 
 require_once './Page.php';
 
@@ -34,38 +34,62 @@ class Baecker extends Page
     protected function processReceivedData()
     {
         parent::processReceivedData();
-
+    
         if ($_SERVER['REQUEST_METHOD'] != 'POST') 
         {
             return;
         }
 
-        if (isset($_POST['ordered_article_id']) && is_numeric($_POST['ordered_article_id']))
-        {
+        //when u submit anything using POST, the the "name" acts like a key and the value is the value
+        //for example in <input type="radio" name="food_status" value={$key} {$isChecked} /> 
+        //when u access the value during post using $status = $_POST['food_status'], "food_status" is the name of the key and 
+        //the value for $status is then {$key}
+
+        if (isset($_POST['ordered_article_id']) && is_numeric($_POST['ordered_article_id'])) {
             $id = $_POST['ordered_article_id'];
+           // echo $id;
         } 
-        else
+        else 
         {
             return;
         }
-
-        if (isset($_POST['status']) && is_numeric($_POST['status'])) 
+    
+        if (isset($_POST['food_status']) && is_numeric($_POST['food_status'])) 
         {
-            $status = $_POST['status'];
+            $status = $_POST['food_status'];
+            //echo $status;
         } 
         else 
         {
             return;
         }
 
+        $this->updateTableOrderedArticle($id,$status);
+       
+        //redirect to same page after processing 
         header('Location: http://localhost/Praktikum/Prak2/Bäcker.php');
+    }
+    
+    
+    protected function updateTableOrderedArticle($id, $status)
+    {
+        $sqlUpdateStatus = "UPDATE ordered_article SET ordered_article.status = $status WHERE ordered_article.ordered_article_id = $id";
+        $stmtUpdateStatus = $this->_database->prepare($sqlUpdateStatus);
+        if (!$stmtUpdateStatus)
+        {
+            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
+        }
+
+        $stmtUpdateStatus->execute();
+        $stmtUpdateStatus->close();
+        //echo $sqlUpdateStatus;
     }
 
     protected function generateView()
     {
         $orderedArticles = $this->getViewData();
     
-        header("Refresh: 15; url=http://localhost/Praktikum/Prak2/B%C3%A4cker.php");
+        header("Refresh: 5; url=http://localhost/Praktikum/Prak2/B%C3%A4cker.php");
         $this->generatePageHeader('Bäcker');
 
         echo "<h1>Bäcker</h1>";
@@ -79,7 +103,6 @@ class Baecker extends Page
             return;
         }
         
-
         foreach ($orderedArticles as $orderedArticle) 
         {
             $status = intval($orderedArticle['status']);
@@ -91,8 +114,9 @@ class Baecker extends Page
             // check if keys exist before accessing them
             $id = isset($orderedArticle['ordering_id']) ? $orderedArticle['ordering_id'] : '<Unknown ID>';
             $name = isset($orderedArticle['name']) ? $orderedArticle['name'] : '<Unknown Name>';
-        
-            echo "<input type='hidden' name='article_id' value={$id} />";
+            $toSubmit= isset($orderedArticle['ordered_article_id'])? $orderedArticle['ordered_article_id']:'<Unknown ID>';
+            
+            echo "<input type='hidden' name='ordered_article_id' value={$toSubmit} />";
             echo <<<EOT
             <section>
                 <h2>Order #{$id}: {$name}</h2>
@@ -109,11 +133,10 @@ class Baecker extends Page
             foreach ($radioButtons as $key => $value) {
                 $isChecked = $status == $key ? 'checked' : ' ';
                 echo <<<EOT
-                    <input type="radio" name="status" value={$key} {$isChecked} /> 
-                    <label for="status"> {$value} </label>
+                    <input type="radio" name="food_status" value={$key} {$isChecked} /> 
+                    <label for="food_status"> {$value} </label>
                 EOT;
             }
-            
             echo "</section>";
             echo "<br>";
             echo "<input type=\"submit\" value=\"Aktualisieren\"/>";
