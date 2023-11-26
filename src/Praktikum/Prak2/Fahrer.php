@@ -162,7 +162,6 @@ class Fahrer extends Page
         } 
         catch (Exception $e)
         {
-            header("Content-type: text/plain; charset=UTF-8");
             echo $e->getMessage();
         }
     }
