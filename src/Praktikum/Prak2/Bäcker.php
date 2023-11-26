@@ -115,7 +115,7 @@ class Baecker extends Page
             $id = isset($orderedArticle['ordering_id']) ? $orderedArticle['ordering_id'] : '<Unknown ID>';
             $name = isset($orderedArticle['name']) ? $orderedArticle['name'] : '<Unknown Name>';
             $toSubmit= isset($orderedArticle['ordered_article_id'])? $orderedArticle['ordered_article_id']:'<Unknown ID>';
-            
+
             echo "<input type='hidden' name='ordered_article_id' value={$toSubmit} />";
             echo <<<EOT
             <section>
@@ -127,7 +127,7 @@ class Baecker extends Page
                 0 => 'Zubereitung',
                 1 => 'Im Öfen',
                 2 => 'Fertig',
-                3 => 'Gepackt',
+                3 => 'Warte zur Abholung',
             ];
             //for each key value pair in the "dictionary" radiobuttons, where 0...3 are $key and the texts are $value
             foreach ($radioButtons as $key => $value) {

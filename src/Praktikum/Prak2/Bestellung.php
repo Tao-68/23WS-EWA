@@ -26,7 +26,7 @@ class Bestellung extends Page
             $articles[] = $row;
         }
         $result->free();
-        //print_r($articles);
+        //var_dump($articles);
         return $articles;
     }
 
@@ -107,10 +107,10 @@ class Bestellung extends Page
 
         try
         {
+            $ordering_id = rand(1, 1000);
+            $this->insertIntoOrdering($ordering_id, $address);
             foreach($warenkorb as $individual_order)
-            {
-                $ordering_id = rand(1, 1000);
-                $this->insertIntoOrdering($ordering_id, $address);
+            {    
                 $this->insertIntoOrdered($individual_order, $ordering_id);
             }
         

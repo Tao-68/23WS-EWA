@@ -31,6 +31,75 @@ class Kunde extends Page
         return $orderedArticles;
     } 
 
+    protected function generateView()
+    {
+        $orderedArticles = $this->getViewData();
+        //var_dump($orderedArticles);
+        header("Refresh: 5; url=http://localhost/Praktikum/Prak2/Kunde.php");
+        $this->generatePageHeader('Kunde');
+
+        echo "<h1>Lieferstatus: </h1>";
+
+        if (sizeof($orderedArticles) == 0) 
+        {
+            echo "<div style='text-align: center;'>";
+            echo "<h1>Zurzeit gibt es keine Bestellungen</h1>";
+            echo "<img src=\"../images/dog.jpeg\" width=500 height=500>";
+            echo "</div>";
+            return;
+        }
+
+        $groupedOrders = array();
+        foreach ($orderedArticles as $orderedArticle) {
+            $status = intval($orderedArticle['status']);
+            $orderId = $orderedArticle["ordering_id"];
+            $pizzaName = $orderedArticle["name"];
+        
+            switch ($status) {
+                case 0:
+                    $statusText = "Zubereitung";
+                    break;
+                case 1:
+                    $statusText = "Im Öfen";
+                    break;
+                case 2:
+                    $statusText = "Fertig";
+                    break;
+                case 3:
+                    $statusText = "Warte auf Abholung";
+                    break;
+                case 4:
+                    $statusText = "Unterwegs";
+                    break;
+                default:
+                    $statusText = "Unknown";
+                    break;
+            }
+        
+            if (!isset($groupedOrders[$orderId]))
+            {
+                $groupedOrders[$orderId] = array();
+            }
+        
+            $groupedOrders[$orderId][] = array(
+                'pizzaName' => $pizzaName,
+                'statusText' => $statusText
+            );
+        }
+        
+        foreach ($groupedOrders as $orderId => $orders) 
+        {
+            echo "<p>Order #{$orderId}:</p>";      
+            foreach ($orders as $order) 
+            {
+                echo "<p>Pizza {$order['pizzaName']}</p>";
+                echo "<p>Status: {$order['statusText']}</p>";
+            }
+            echo "<br>";
+        }
+        $this->generatePageFooter();
+    }
+
     protected function processReceivedData()
     {
         parent::processReceivedData();
@@ -59,53 +128,6 @@ class Kunde extends Page
         }
 
         header('Location: http://localhost/Praktikum/Prak2/Kunde.php');
-    }
-
-    protected function generateView()
-    {
-        $orderedArticles = $this->getViewData();
-        header("Refresh: 5; url=http://localhost/Praktikum/Prak2/Kunde.php");
-        $this->generatePageHeader('Kunde');
-
-        echo "<h1>Lieferstatus: </h1>";
-
-        if (sizeof($orderedArticles) == 0) 
-        {
-            echo "<div style='text-align: center;'>";
-            echo "<h1>Zurzeit gibt es keine Bestellungen</h1>";
-            echo "<img src=\"../images/dog.jpeg\" width=500 height=500>";
-            echo "</div>";
-            return;
-        }
-
-        foreach ($orderedArticles as $orderedArticle)
-        {
-            $status = intval($orderedArticle['status']);
-            $orderId = $orderedArticle["ordered_article_id"];
-            $pizzaName = $orderedArticle["name"];
-        
-            switch ($status) 
-            {
-                case 0:
-                    $statusText = "Bestellt";
-                    break;
-                case 1:
-                    $statusText = "Im Öfen";
-                    break;
-                case 2:
-                    $statusText = "Fertig";
-                    break;
-                case 3:
-                    $statusText = "Unterwegs";
-                    break;
-                default:
-                    $statusText = "Unknown";
-                    break;
-            }     
-            echo "<p>Order #{$orderId}: Pizza {$pizzaName}</p>";
-            echo "<p>Status: {$statusText}</p>";
-        }       
-        $this->generatePageFooter();
     }
 
     public static function main()
