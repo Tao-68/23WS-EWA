@@ -105,6 +105,11 @@ class Bestellung extends Page
             return;
         }
 
+        if (empty($address)) 
+        {
+            throw new Exception("Die Lieferadresse darf nicht leer sein.");
+        }
+
         try
         {
             $ordering_id = rand(1, 1000);
