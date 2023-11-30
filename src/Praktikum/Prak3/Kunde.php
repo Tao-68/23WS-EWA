@@ -16,8 +16,7 @@ class Kunde extends Page
     
     protected function getViewData()
     {
-        $sql = "SELECT ordered_article.ordered_article_id, ordered_article.article_id, ordered_article.ordering_id, ordered_article.status, article.name 
-                FROM ordered_article LEFT JOIN article ON ordered_article.article_id = article.article_id";
+        $sql = "SELECT ordered_article.ordered_article_id, ordered_article.article_id, ordered_article.ordering_id, ordered_article.status, article.name FROM ordered_article LEFT JOIN article ON ordered_article.article_id = article.article_id";
        
         $result = $this->_database->query($sql);
         if (!$result)
@@ -36,7 +35,7 @@ class Kunde extends Page
     {
         $orderedArticles = $this->getViewData();
         //var_dump($orderedArticles);
-        header("Refresh: 5; url=http://localhost/Praktikum/Prak3/Kunde.php");
+        header("Refresh: 5; url=http://localhost/Praktikum/Prak2/Kunde.php");
         $this->generatePageHeader('Kunde');
 
         echo "<h1>Lieferstatus: </h1>";
@@ -128,7 +127,7 @@ class Kunde extends Page
             return;
         }
 
-        header('Location: http://localhost/Praktikum/Prak3/Kunde.php');
+        header('Location: http://localhost/Praktikum/Prak2/Kunde.php');
     }
 
     public static function main()
