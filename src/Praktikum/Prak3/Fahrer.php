@@ -27,13 +27,15 @@ class Fahrer extends Page
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
 
         $orderedArticles = array();
-        while ($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) 
+        {
             array_push($orderedArticles, $row);
         }
         $result->free();
 
         $bestellungen = array();
-        foreach ($orderedArticles as $row) {
+        foreach ($orderedArticles as $row) 
+        {
             $key = $row["ordering_id"];
             if (!isset($bestellungen[$key]))
                 $bestellungen[$key] = array();
@@ -47,42 +49,47 @@ class Fahrer extends Page
     {
         parent::processReceivedData();
 
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') 
+        {
             return;
         }
 
-        if (isset($_POST['ordering_id']) && is_numeric($_POST['ordering_id'])) {
+        if (isset($_POST['ordering_id']) && is_numeric($_POST['ordering_id'])) 
+        {
             $ordering_id = $_POST['ordering_id'];
-        } else {
+        } 
+        else 
+        {
             return;
         }
 
-        if (isset($_POST['status'][$ordering_id]) && is_numeric($_POST['status'][$ordering_id])) {
+        if (isset($_POST['status'][$ordering_id]) && is_numeric($_POST['status'][$ordering_id])) 
+        {
             $status = $_POST['status'][$ordering_id];
             //echo htmlspecialchars($status);
-            if ($status == 3) {
+            if ($status == 3) 
+            {
                 $updateSql = "UPDATE ordered_article SET status = 3 WHERE ordering_id = $ordering_id AND status = 4";
                 $result = $this->_database->query($updateSql);
 
-                if (!$result) {
-                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);
-                }
+                if (!$result) 
+                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);              
             }
-            if ($status == 4) {
+            if ($status == 4) 
+            {
                 $updateSql = "UPDATE ordered_article SET status = 4 WHERE ordering_id = $ordering_id AND status = 3";
                 $result = $this->_database->query($updateSql);
 
-                if (!$result) {
-                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);
-                }
+                if (!$result) 
+                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);               
             }
-            if ($status == 5) {
+            if ($status == 5) 
+            {
                 $updateSql = "UPDATE ordered_article SET status = 5 WHERE ordering_id = $ordering_id";
                 $result = $this->_database->query($updateSql);
 
-                if (!$result) {
-                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);
-                }
+                if (!$result) 
+                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);               
             }
         }
 
@@ -98,7 +105,8 @@ class Fahrer extends Page
 
         echo "<h1>Fahrer</h1>";
 
-        if (sizeof($bestellungen) == 0) {
+        if (sizeof($bestellungen) == 0) 
+        {
             echo "<div style='text-align: center;'>";
             echo "<h1>Zurzeit gibt es keine Bestellungen</h1>";
             echo "<img src=\"../images/dog.jpeg\" width=500 height=500>";
@@ -106,8 +114,10 @@ class Fahrer extends Page
             return;
         }
 
-        foreach ($bestellungen as $ordering_id => $orderedArticles) {
-            $price = array_reduce($orderedArticles, function ($value, $i) {
+        foreach ($bestellungen as $ordering_id => $orderedArticles) 
+        {
+            $price = array_reduce($orderedArticles, function ($value, $i) 
+            {
                 $value += $i['price'];
                 return $value;
             }, 0);

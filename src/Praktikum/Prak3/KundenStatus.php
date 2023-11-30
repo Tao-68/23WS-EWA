@@ -3,15 +3,21 @@ require_once "./Page.php";
 
 class Kunde extends Page
 {
+
     protected function __construct()
     {
         parent::__construct();
-        session_start(); 
+        session_start();
     }
 
     public function __destruct()
     {
         parent::__destruct();
+    }
+
+    protected function processReceivedData()
+    {
+        parent::processReceivedData();
     }
 
     protected function getViewData()
@@ -24,7 +30,8 @@ class Kunde extends Page
                 WHERE ordered_article.ordering_id = ?";
 
         $stmt = $this->_database->prepare($sql);
-        if (!$stmt) {
+        if (!$stmt) 
+        {
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
         }
 
@@ -32,123 +39,48 @@ class Kunde extends Page
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if (!$result) {
+        if (!$result) 
+        {
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
         }
 
         $orderedArticles = array();
-        while ($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) 
+        {
             $orderedArticles[] = $row;
         }
 
         $stmt->close();
         $result->free();
-
         return $orderedArticles;
     }
 
     protected function generateView()
     {
         $orderedArticles = $this->getViewData();
-        $this->generatePageHeader('Kunde');
-
-        echo "<h1>Lieferstatus: </h1>";
-
-        if (sizeof($orderedArticles) == 0) {
-            echo "<div style='text-align: center;'>";
-            echo "<h1>Zurzeit gibt es keine Bestellungen</h1>";
-            echo "<img src=\"../images/dog.jpeg\" width=500 height=500>";
-            echo "</div>";
-            return;
-        }
-
-        $groupedOrders = array();
-        foreach ($orderedArticles as $orderedArticle) {
-            $status = intval($orderedArticle['status']);
-            $orderId = $orderedArticle["ordering_id"];
-            $pizzaName = htmlspecialchars($orderedArticle["name"]);
-
-            switch ($status) {
-                case 0:
-                    $statusText = "Zubereitung";
-                    break;
-                case 1:
-                    $statusText = "Im Öfen";
-                    break;
-                case 2:
-                    $statusText = "Fertig";
-                    break;
-                case 3:
-                    $statusText = "Warte auf Abholung";
-                    break;
-                case 4:
-                    $statusText = "Unterwegs";
-                    break;
-                case 5:
-                    $statusText = "Geliefert";
-                    break;
-                default:
-                    $statusText = "Unknown";
-                    break;
-            }
-
-            if (!isset($groupedOrders[$orderId])) {
-                $groupedOrders[$orderId] = array();
-            }
-
-            $groupedOrders[$orderId][] = array(
-                'pizzaName' => $pizzaName,
-                'statusText' => $statusText
-            );
-        }
-
-        foreach ($groupedOrders as $orderId => $orders) {
-            echo "<p>Order #{$orderId}:</p>";
-            foreach ($orders as $order) {
-                echo "<p>Pizza {$order['pizzaName']}</p>";
-                echo "<p>Status: {$order['statusText']}</p>";
-            }
-            echo "<br>";
-        }
-        $this->generatePageFooter();
-    }
-
-    protected function processReceivedData()
-    {
-        parent::processReceivedData();
-
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-            return;
-        }
-
-        if (isset($_POST['ordered_article_id']) && is_numeric($_POST['ordered_article_id'])) {
-            $id = $_POST['ordered_article_id'];
-        } else {
-            return;
-        }
-
-        if (isset($_POST['status']) && is_numeric($_POST['status'])) {
-            $status = $_POST['status'];
-        } else {
-            return;
-        }
-
-        $_SESSION['last_order_id'] = $id;
-
-        header('Location: http://localhost/Praktikum/Prak3/Kunde.php');
+        //JSON is a common format for transmitting data between a server and a web application.The client-side code (JS) can easily consume and 
+        //work with JSON data.JS on the client side can use the fetch API to make an HTTP request to this page and receive the JSON response. 
+        //which it can then use to dynamically update the content of the webpage based on the received data from the back end.
+        header("Content-Type: application/json; charset=UTF-8");     
+        $data = json_encode($orderedArticles);
+        echo $data;
     }
 
     public static function main()
     {
-        try {
+        try
+         {
             $page = new Kunde();
             $page->processReceivedData();
             $page->generateView();
-        } catch (Exception $e) {
+        } 
+        catch (Exception $e) 
+        {
+            header("Content-type: text/plain; charset=UTF-8");
             echo $e->getMessage();
         }
     }
 }
 
 Kunde::main();
-?>
+

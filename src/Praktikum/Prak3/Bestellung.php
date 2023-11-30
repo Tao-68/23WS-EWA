@@ -34,19 +34,30 @@ class Bestellung extends Page
     protected function generateView()
     {
         error_reporting(E_ALL);
-
+    
         $articles = $this->getViewData();
         $this->generatePageHeader('Bestellung');
         echo "<h1> Bestellung </h1>";
         echo "<h2>Speisekarte</h2>";
+    
+        $imageFolder = "../images/";
+    
         foreach ($articles as $article) {
-            echo "<div>";
-            echo "<img src=\"" . htmlspecialchars($article['picture']) . "\" alt='' width='150' height='150'/>";
+            echo "<div>";          
+            $imageName = str_replace(' ', '_', strtolower($article['name'])) . ".jpg";
+            $imagePath = $imageFolder . $imageName;
+
+            if (file_exists($imagePath)) {
+                echo "<img src=\"" . htmlspecialchars($imagePath) . "\" alt='{$article['name']}' width='150' height='150'/>";
+            } else {
+                echo "<p>Image not found</p>";
+            }
+    
             echo "<p>" . htmlspecialchars($article['name']) . "</p>";
             echo "<p>{$article['price']} €</p>";
             echo "</div>";
         }
-
+    
         $this->pizzaSelection($articles);
         $this->generatePageFooter();
     }
@@ -85,25 +96,28 @@ class Bestellung extends Page
         if (isset($_POST['warenkorb'], $_POST['address']) && is_array($_POST['warenkorb']) && is_string($_POST['address'])) {
             $warenkorb = $_POST['warenkorb'];
             $address = $_POST['address'];
-        } else {
+        } 
+        else 
+        {
             return;
         }
 
-        // Validate $address to ensure it's not empty and meets your criteria
-        if (empty($address)) {
+        if (empty($address)) 
+        {
             throw new Exception("Die Lieferadresse darf nicht leer sein.");
         }
 
-        // Additional validation for $warenkorb if needed
-
-        try {
+        try 
+        {
             $ordering_id = rand(1, 1000);
             $this->insertIntoOrdering($ordering_id, $address);
             foreach ($warenkorb as $individual_order) {
                 $this->insertIntoOrdered($individual_order, $ordering_id);
             }
             $_SESSION['last_order_id'] = $ordering_id;
-        } catch (Exception $e) {
+        } 
+        catch (Exception $e) 
+        {
             echo $e->getMessage();
             exit;
         }

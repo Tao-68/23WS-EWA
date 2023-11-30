@@ -94,6 +94,7 @@ class Baecker extends Page
 
         echo "<h1>Bäcker</h1>";
 
+        $hasOrdersToBake = false;
         if (sizeof($orderedArticles) == 0) 
         {
             echo "<div style='text-align: center;'>";
@@ -102,10 +103,29 @@ class Baecker extends Page
             echo "</div>";
             return;
         }
+        foreach ($orderedArticles as $orderedArticle) 
+        {
+            $status = intval($orderedArticle['status']);
+            if ($status <= 3) {
+                $hasOrdersToBake = true;
+                break;
+            }
+        }
+
+        if (!$hasOrdersToBake) 
+        {
+            echo "<div style='text-align: center;'>";
+            echo "<h1>Zurzeit gibt es keine Bestellungen vorzubereiten</h1>";
+            echo "<img src=\"../images/dog.jpeg\" width=500 height=500>";
+            echo "</div>";
+            $this->generatePageFooter();
+            return;
+        }
         
         foreach ($orderedArticles as $orderedArticle) 
         {
             $status = intval($orderedArticle['status']);
+            //echo $status;
             if ($status > 3)
                 continue;
         
@@ -146,7 +166,7 @@ class Baecker extends Page
         $this->generatePageFooter();
     }
 
-    static function main()
+    public static function main()
     {
         try
         {

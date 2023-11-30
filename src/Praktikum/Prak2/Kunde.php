@@ -36,7 +36,7 @@ class Kunde extends Page
     {
         $orderedArticles = $this->getViewData();
         //var_dump($orderedArticles);
-        header("Refresh: 5; url=http://localhost/Praktikum/Prak3/Kunde.php");
+        header("Refresh: 5; url=http://localhost/Praktikum/Prak2/Kunde.php");
         $this->generatePageHeader('Kunde');
 
         echo "<h1>Lieferstatus: </h1>";
@@ -128,7 +128,7 @@ class Kunde extends Page
             return;
         }
 
-        header('Location: http://localhost/Praktikum/Prak3/Kunde.php');
+        header('Location: http://localhost/Praktikum/Prak2/Kunde.php');
     }
 
     public static function main()
