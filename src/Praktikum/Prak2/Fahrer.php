@@ -20,7 +20,7 @@ class Fahrer extends Page
         FROM ordered_article
         LEFT JOIN ordering ON ordered_article.ordering_id = ordering.ordering_id
         LEFT JOIN article ON ordered_article.article_id = article.article_id
-        WHERE ordered_article.status >= 2";
+        WHERE ordered_article.status >= 3";
 
         $result = $this->_database->query($sql);
         if (!$result)
@@ -66,7 +66,6 @@ class Fahrer extends Page
         if (isset($_POST['status'][$ordering_id]) && is_numeric($_POST['status'][$ordering_id])) 
         {
             $status = $_POST['status'][$ordering_id];
-            //echo $status;
             if ($status == 3) 
             {
                 $updateSql = "UPDATE ordered_article SET status = 3 WHERE ordering_id = $ordering_id AND status = 4";

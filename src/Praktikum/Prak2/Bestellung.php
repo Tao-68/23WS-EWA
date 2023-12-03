@@ -32,7 +32,6 @@ class Bestellung extends Page
 
     protected function generateView()
     {
-        //there is no picture in the database, has been set as varchar
         error_reporting(E_ALL);
         
         $articles = $this->getViewData();
@@ -89,7 +88,6 @@ class Bestellung extends Page
         if (isset($_POST['warenkorb']) && is_array($_POST['warenkorb']))
         {
             $warenkorb = $_POST['warenkorb'];
-           // print_r($warenkorb);
         } 
         else 
         {

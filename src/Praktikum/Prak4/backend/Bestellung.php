@@ -37,9 +37,13 @@ class Bestellung extends Page
     
         $articles = $this->getViewData();
         $this->generatePageHeader('Bestellung');
-        echo "<h1> Bestellung </h1>";
-        echo "<h2>Speisekarte</h2>";
-    
+        echo "<div class='contactContainer'>";
+        echo "<div id='contact-us-link' class='contactUs'><a href='https://h-da.de'><img class='contactImages' src='../../images/ContactUs.png' alt='Contact Us'></a></div>";
+        echo "<div id='github-link' class='contactUs'><a href='https://code.fbi.h-da.de' target='_blank'><img class='contactImages' src='../../images/Github.png' alt='GitHub'></a></div>";
+        echo "</div>";
+        echo "<img src=\"../../images/banner.png\" alt='Dough Delight' class='banner'/>";
+        echo "<h2 class='main-Heading'>Speisekarte</h2>";
+       
         $this->pizzaManipulation($articles);
         $this->pizzaSelection($articles);
         $this->generatePageFooter();
@@ -58,37 +62,33 @@ class Bestellung extends Page
             } else {
                 echo "<p>Image not found</p>";
             }
-            echo "<p>" . htmlspecialchars($article['name']). ": ";
-            echo "{$article['price']} €</p>";
+            echo "<p class='pizza-name'>" . htmlspecialchars($article['name']). ": ";
+           echo number_format($article['price'], 2) . " €</p>";
             echo "<input type='hidden' name='singlePizzaPrice' value='{$article['price']}' />";
             echo "</div>";
         }
-        echo "<div id='gesamtPreis'>Gesamtpreis: 0 €</div>";
+        echo "<div id='gesamtPreis' style='display: none;'>Gesamtpreis: 0 €</div>";
     }
     
 
     protected function pizzaSelection(array $articles)
-    {
-        echo "<form name='pizzaOrderForm' action='Bestellung.php' method='post'>";
-        echo "<div>";
-        echo "<label>";
-        echo "<select tabindex='0' name='warenkorb[]' multiple='multiple' class='custom-select' >";
+{
+    echo "<form id='pizzaOrderForm' name='pizzaOrderForm' action='Bestellung.php' method='post'>";
+    echo "<div>";
+    echo "<label>";
+    echo "<select tabindex='0' name='warenkorb[]' class='custom-select' id='pizzaSelector'>";
+    echo "</select>";
+    echo "</label>";
+    echo "</div>";
+    echo "<input type='text' value='' name='address' placeholder='Schöfferstraße 3, 64295 Darmstadt' class='address-Input'/>";
+    echo "<div>";
+    echo "<input tabindex='1' type='reset' name='deleteAll' value='Alle Löschen' class='buttons'/>";
+    echo "<input tabindex='2' type='button' name='delete' value='Löschen' class='buttons'/>";
+    echo "<input tabindex='3' type='submit' name='submitOrder' value='Bestellen' class='buttons'/>";
+    echo "</div>";
+    echo "</form>";
+} 
 
-        foreach ($articles as $article) {
-            //echo "<option value=" . htmlspecialchars($article['article_id']) ." title=". htmlspecialchars($article['price'])." label=".htmlspecialchars($article['name']).">" . htmlspecialchars($article['name']) . "</option>";
-        }
-
-        echo "</select>";
-        echo "</label>";
-        echo "</div>";
-        echo "<input type='text' value='' name='address' placeholder='Ihre Adresse'/>";
-        echo "<div>";
-        echo "<input tabindex='1' type='reset' name='deleteAll' value='Alle Löschen'/>";
-        echo "<input tabindex='2' type='button' name='delete' value='Löschen'/>";
-        echo "<input tabindex='3' type='submit' name='submitOrder' value='Bestellen'/>";
-        echo "</div>";
-        echo "</form>";
-    }
 
 
     protected function processReceivedData()

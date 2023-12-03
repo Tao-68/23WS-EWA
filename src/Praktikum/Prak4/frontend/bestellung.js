@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
  "use strict";
-  var pizzaDict={ "8.57":1, "12.5":1,"11.99":1}; //is a dictionary that maps the price of a pizza to the number of times it has been added to the cart
+  var pizzaDict={ "8.57":1, "12.5":1,"11.99":1, "9.99":1, "8.5":1,"14.4":1,"13.99":1,"7.5":1,"12.99":1, "11.39":1}; //is a dictionary that maps the price of a pizza to the number of times it has been added to the cart
 
   const pizzaOrderForm = document.forms['pizzaOrderForm'];
   const submitOrder = document.querySelector('input[name="submitOrder"]'); 
@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   function updateTotalPrice()
   {
+    if (totalPriceDiv.innerText.trim() === 'Gesamtpreis: 0 €') 
+      totalPriceDiv.style.display = 'none';
+  
     var total = 0;
     const allOptions = pizzaSelect.options;
     for (const option of allOptions) 
@@ -27,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     totalPriceDiv.innerText = `Gesamtpreis: ${total.toFixed(2)} €`;
+    totalPriceDiv.style.display = 'block';
     submitOrder.disabled = pizzaSelect.selectedOptions.length === 0 || addressInput.value.length === 0;
   }
   pizzaSelect.addEventListener('change', updateTotalPrice);
@@ -111,5 +115,62 @@ document.addEventListener('DOMContentLoaded', () => {
       updateTotalPrice();
     });
   });
+
+  const pizzaSelector = document.getElementById('pizzaSelector');
+  pizzaSelector.addEventListener('mouseenter', () => {
+        pizzaSelector.size = pizzaSelect.options.length;
+    });
+
+    pizzaSelector.addEventListener('mouseleave', () => {
+        pizzaSelector.size = 1;
+    });
 });
+
+// function contrastGesamtPreisWithBackgroundColor()
+//   {
+//     const gesamtPreisElement = document.getElementById('gesamtPreis');
+//     const bodyBackgroundColor = document.body.style.backgroundColor;
+//     const isBackgroundColorLight = isColorLight(bodyBackgroundColor);
+//     console.log("Body Background Color:", bodyBackgroundColor);
+//     console.log("Is Background Color Light:", isBackgroundColorLight);
+//     gesamtPreisElement.style.color = isBackgroundColorLight ? "#000000" : "#FFFFFF";
+//   }
+    
+//   function isColorLight(color) 
+//   {
+//     var rgb = getColorRgb(color);
+//     //console.log("rgb:", rgb);
+//     var r = (rgb >> 16) & 0xff;
+//    // console.log("r:", r);
+//     var g = (rgb >> 8) & 0xff;
+//     //console.log("g:", g);
+//     var b = rgb & 0xff; // No need to shift here
+//     //console.log("b:", b);
+//     var average = (r + g + b) / 3;
+//     //console.log("avg:", average);
+//     return average > 100;
+//   }
+  
+//   function getColorRgb(color) 
+//   {
+//     if (color.startsWith("rgb")) 
+//     {
+//       const rgbArray = color.match(/\d+/g);
+//       return (parseInt(rgbArray[0]) << 16) | (parseInt(rgbArray[1]) << 8) | parseInt(rgbArray[2]);
+//     } 
+//     else 
+//     {
+//       const tempDiv = document.createElement("div");
+//       tempDiv.style.color = color;
+//       document.body.appendChild(tempDiv);
+//       const rgb = getComputedStyle(tempDiv).color.match(/\d+/g);
+//       document.body.removeChild(tempDiv);
+//       return (parseInt(rgb[0]) << 16) | (parseInt(rgb[1]) << 8) | parseInt(rgb[2]);
+//     }
+//   }
+
+// window.onload = () => {
+//   contrastGesamtPreisWithBackgroundColor();
+//   window.setInterval(contrastGesamtPreisWithBackgroundColor, 1000);
+// }
   
