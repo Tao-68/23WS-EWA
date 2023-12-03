@@ -66,7 +66,6 @@ class Fahrer extends Page
         if (isset($_POST['status'][$ordering_id]) && is_numeric($_POST['status'][$ordering_id])) 
         {
             $status = $_POST['status'][$ordering_id];
-            //echo $status;
             if ($status == 3) 
             {
                 $updateSql = "UPDATE ordered_article SET status = 3 WHERE ordering_id = $ordering_id AND status = 4";
