@@ -35,7 +35,6 @@ class Kunde extends Page
     protected function generateView()
     {
         $orderedArticles = $this->getViewData();
-        //var_dump($orderedArticles);
         header("Refresh: 5; url=http://localhost/Praktikum/Prak2/Kunde.php");
         $this->generatePageHeader('Kunde');
 
