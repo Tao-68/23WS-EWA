@@ -26,7 +26,6 @@ class Bestellung extends Page
             $articles[] = $row;
         }
         $result->free();
-        //var_dump($articles);
         return $articles;
     }
 
