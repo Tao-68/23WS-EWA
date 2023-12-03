@@ -1,0 +1,43 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #ffe4e4;
+    color:#000000;
+    margin: 0;
+    padding: 0px 100px 13px 13px; /*top-right-bottom-left*/
+}
+
+h1 {
+    color: #000000;
+    text-align: center;
+}
+
+#dogDiv {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#dogDiv img {
+    width: 500px;
+    height: 500px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order-container {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 20px 0;
+    padding: 10px;
+}
+
+.order-details {
+    padding: 10px;
+}
+
+.order-details p {
+    margin: 5px 20px; /* Increased right margin */
+}
+
+.hidden-input {
+    display: none;
+}
