@@ -39,10 +39,6 @@ class Baecker extends Page
             return;
         }
 
-        //when u submit anything using POST, the "name" acts like a key and value for it is taken from value property
-        //for example in <input type="radio" name="food_status" value={$key} {$isChecked} /> 
-        //when u access the value during post using $status = $_POST['food_status'], "food_status" is the name of the key and 
-        //the value for $status is then {$key}
         if (isset($_POST['ordered_article_id']) && is_numeric($_POST['ordered_article_id'])) {
             $id = $_POST['ordered_article_id'];
            // echo $id;
