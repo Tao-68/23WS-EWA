@@ -29,7 +29,7 @@ require_once './Page.php';
  * @author   Bernhard Kreling, <bernhard.kreling@h-da.de> 
  * @author   Ralf Hahn, <ralf.hahn@h-da.de> 
  */
-class Baker extends Page
+class PageTemplate extends Page
 {
     // to do: declare reference variables for members 
     // representing substructures/blocks
@@ -82,7 +82,7 @@ class Baker extends Page
     protected function generateView() 
     {
         $this->getViewData();
-        $this->generatePageHeader('Baker');
+        $this->generatePageHeader('to do: change headline');
         // to do: call generateView() for all members
         // to do: output view of this page
         $this->generatePageFooter();
@@ -118,7 +118,7 @@ class Baker extends Page
     public static function main() 
     {
         try {
-            $page = new Backer();
+            $page = new PageTemplate();
             $page->processReceivedData();
             $page->generateView();
         }

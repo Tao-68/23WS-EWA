@@ -1,62 +1,81 @@
-<?php 
+<?php
 require_once "./Page.php";
 
 class Kunde extends Page
 {
     protected function __construct()
     {
-        //initiate the DB connection
         parent::__construct();
+        session_start(); 
     }
 
     public function __destruct()
     {
         parent::__destruct();
     }
-    
+
     protected function getViewData()
     {
+        $lastOrderID = isset($_SESSION['last_order_id']) ? $_SESSION['last_order_id'] : 0;
+
         $sql = "SELECT ordered_article.ordered_article_id, ordered_article.article_id, ordered_article.ordering_id, ordered_article.status, article.name 
-                FROM ordered_article LEFT JOIN article ON ordered_article.article_id = article.article_id";
-       
-        $result = $this->_database->query($sql);
-        if (!$result)
+                FROM ordered_article 
+                LEFT JOIN article ON ordered_article.article_id = article.article_id
+                WHERE ordered_article.ordering_id = ?";
+
+        $stmt = $this->_database->prepare($sql);
+        if (!$stmt) 
+        {
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
+        }
+
+        $stmt->bind_param("i", $lastOrderID);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if (!$result) 
+        {
+            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
+        }
 
         $orderedArticles = array();
         while ($row = $result->fetch_assoc()) 
-        { 
+        {
             $orderedArticles[] = $row;
-        } 
+        }
+
+        $stmt->close();
         $result->free();
+
         return $orderedArticles;
-    } 
+    }
 
     protected function generateView()
     {
         $orderedArticles = $this->getViewData();
-        //var_dump($orderedArticles);
-        header("Refresh: 5; url=http://localhost/Praktikum/Prak2/Kunde.php");
         $this->generatePageHeader('Kunde');
-
+        echo "<body onload=\"process()\">";
         echo "<h1>Lieferstatus: </h1>";
 
         if (sizeof($orderedArticles) == 0) 
         {
-            echo "<div style='text-align: center;'>";
+            echo "<div id=\"dogDiv\" style='text-align: center;'>";
             echo "<h1>Zurzeit gibt es keine Bestellungen</h1>";
-            echo "<img src=\"../images/dog.jpeg\" width=500 height=500>";
+            echo "<img src=\"../../images/dog.jpeg\" width=500 height=500>";
             echo "</div>";
             return;
         }
 
         $groupedOrders = array();
-        foreach ($orderedArticles as $orderedArticle) {
+        foreach ($orderedArticles as $orderedArticle) 
+        {
             $status = intval($orderedArticle['status']);
             $orderId = $orderedArticle["ordering_id"];
-            $pizzaName = $orderedArticle["name"];
-        
-            switch ($status) {
+            $orderedArticleId = $orderedArticle["ordered_article_id"];
+            $pizzaName = htmlspecialchars($orderedArticle["name"]);
+
+            switch ($status) 
+            {
                 case 0:
                     $statusText = "Zubereitung";
                     break;
@@ -72,31 +91,38 @@ class Kunde extends Page
                 case 4:
                     $statusText = "Unterwegs";
                     break;
+                case 5:
+                    $statusText = "Geliefert";
+                    break;
                 default:
-                    $statusText = "Unknown";
+                    $statusText = "Unknown Status";
                     break;
             }
-        
-            if (!isset($groupedOrders[$orderId]))
+
+            if (!isset($groupedOrders[$orderId])) 
             {
                 $groupedOrders[$orderId] = array();
             }
-        
+
             $groupedOrders[$orderId][] = array(
                 'pizzaName' => $pizzaName,
-                'statusText' => $statusText
+                'statusText' => $statusText,
+                'orderedArticleId' => $orderedArticleId
             );
         }
-        
-        foreach ($groupedOrders as $orderId => $orders) 
+
+        foreach ($groupedOrders as $orderId => $orders)
         {
-            echo "<p>Order #{$orderId}:</p>";      
+            echo "<div id='order_{$orderId}' data-name='order_{$orderId}' class='orderContainer'>";         
             foreach ($orders as $order) 
             {
+                echo "<p>Order #{$orderId}:</p>";
                 echo "<p>Pizza {$order['pizzaName']}</p>";
-                echo "<p>Status: {$order['statusText']}</p>";
+                echo "<p data-status-{$order['orderedArticleId']}='{$order['orderedArticleId']}'>Status: {$order['statusText']}</p>";
+                echo "<br>";
+                echo "<input type='hidden' name='mylabel' value=" . htmlspecialchars($order['orderedArticleId']) . " />";
             }
-            echo "<br>";
+            echo "</div>";
         }
         $this->generatePageFooter();
     }
@@ -119,7 +145,7 @@ class Kunde extends Page
             return;
         }
 
-        if (isset($_POST['status']) && is_numeric($_POST['status'])) 
+        if (isset($_POST['status']) && is_numeric($_POST['status']))       
         {
             $status = $_POST['status'];
         } 
@@ -128,7 +154,26 @@ class Kunde extends Page
             return;
         }
 
-        header('Location: http://localhost/Praktikum/Prak2/Kunde.php');
+        $_SESSION['last_order_id'] = $id;
+
+        header('Location: http://localhost/Praktikum/Prak4/backend/Kunde.php');
+    }
+
+    // ALWAYS INCLUDE THE DEFER ATTRIBUTE IN SRC WHEN INCLUDING JS FILES
+    protected function generatePageHeader($headline = "")
+    {
+        $headline = htmlspecialchars($headline);
+        header("Content-type: text/html; charset=UTF-8");
+        echo <<<EOT
+        <!DOCTYPE html>
+        <html lang="de">
+        <head>
+            <meta charset="UTF-8">
+            <title>{$headline}</title>
+            <script src="../frontend/kunde.js" defer></script>
+            <link rel="stylesheet" href="../styles/kunde.css">
+        </head>
+        EOT;
     }
 
     public static function main()

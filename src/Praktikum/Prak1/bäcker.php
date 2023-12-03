@@ -15,10 +15,16 @@ echo <<<BACKER
     <form action="https://echo.fbi.h-da.de/" method="post" id="baeckerForm" accept-charset="UTF-8">
         <div>
                 <input type="radio" name="EssenStatus" id ="Öfen" value="im oefen">
+                <label for="EssenStatus"> Zubereitung </label>
+                <br>
+                <input type="radio" name="EssenStatus" id ="Öfen" value="im oefen">
                 <label for="EssenStatus"> Im Öfen </label>
                 <br>        
                 <input type="radio" name="EssenStatus" id="bereit" value="bereit">
-                <label for="EssenStatus"> Bereit </label>
+                <label for="EssenStatus"> Fertig </label>
+                <br>
+                <input type="radio" name="EssenStatus" id ="Öfen" value="im oefen">
+                <label for="EssenStatus"> Gepackt </label>
                 <br>
         </div>
         <input type="submit" value="Aktualisieren"/>

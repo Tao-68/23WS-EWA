@@ -3,13 +3,13 @@ require_once "./Page.php";
 
 class Fahrer extends Page
 {
-    protected function __constructor()
+    protected function __construct()
     {
-        //initiate the DB connection
+        // initiate the DB connection
         parent::__construct();
     }
 
-    public function __destructor()
+    public function __destruct()
     {
         parent::__destruct();
     }
@@ -37,7 +37,7 @@ class Fahrer extends Page
         foreach ($orderedArticles as $row) 
         {
             $key = $row["ordering_id"];
-            if (!isset($bestellungen[$key])) 
+            if (!isset($bestellungen[$key]))
                 $bestellungen[$key] = array();
 
             array_push($bestellungen[$key], $row);
@@ -66,16 +66,14 @@ class Fahrer extends Page
         if (isset($_POST['status'][$ordering_id]) && is_numeric($_POST['status'][$ordering_id])) 
         {
             $status = $_POST['status'][$ordering_id];
-            //echo $status;
+            //echo htmlspecialchars($status);
             if ($status == 3) 
             {
                 $updateSql = "UPDATE ordered_article SET status = 3 WHERE ordering_id = $ordering_id AND status = 4";
                 $result = $this->_database->query($updateSql);
 
                 if (!$result) 
-                {
-                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);
-                }
+                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);              
             }
             if ($status == 4) 
             {
@@ -83,25 +81,30 @@ class Fahrer extends Page
                 $result = $this->_database->query($updateSql);
 
                 if (!$result) 
-                {
-                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);
-                }
+                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);               
+            }
+            if ($status == 5) 
+            {
+                $updateSql = "UPDATE ordered_article SET status = 5 WHERE ordering_id = $ordering_id";
+                $result = $this->_database->query($updateSql);
+
+                if (!$result) 
+                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);               
             }
         }
 
-        header('Location: http://localhost/Praktikum/Prak2/Fahrer.php');
+        header('Location: http://localhost/Praktikum/Prak3/Fahrer.php');
     }
 
 
     protected function generateView()
     {
         $bestellungen = $this->getViewData();
-        //var_dump($bestellungen);
-        header("Refresh: 5; url=http://localhost/Praktikum/Prak2/Fahrer.php");
+        header("Refresh: 5; url=http://localhost/Praktikum/Prak3/Fahrer.php");
         $this->generatePageHeader('Fahrer');
 
-        echo"<h1>Fahrer</h1>";
-        
+        echo "<h1>Fahrer</h1>";
+
         if (sizeof($bestellungen) == 0) 
         {
             echo "<div style='text-align: center;'>";
@@ -111,19 +114,21 @@ class Fahrer extends Page
             return;
         }
 
-        foreach ($bestellungen as $ordering_id => $orderedArticles) {
-            $price = array_reduce($orderedArticles, function ($value, $i) {
+        foreach ($bestellungen as $ordering_id => $orderedArticles) 
+        {
+            $price = array_reduce($orderedArticles, function ($value, $i) 
+            {
                 $value += $i['price'];
                 return $value;
             }, 0);
-        
+
             echo "<h3>Order #{$ordering_id}: {$orderedArticles[0]['address']}.</h3>";
             echo "<h3> Summe: {$price} EURO</h3>";
-        
-            echo "<form action=\"Fahrer.php\" method=\"post\">";     
+
+            echo "<form action=\"Fahrer.php\" method=\"post\">";
             echo "<section>";
             echo "<p>Status:</p>";
-            
+
             $isChecked2 = $orderedArticles[0]['status'] == 3 ? 'checked' : null;
             echo <<<EOT
             <label>
@@ -131,7 +136,7 @@ class Fahrer extends Page
                 Warte zur Abholung
             </label>
             EOT;
-            
+
             $isChecked3 = $orderedArticles[0]['status'] == 4 ? 'checked' : null;
             echo <<<EOT
             <label>
@@ -139,10 +144,18 @@ class Fahrer extends Page
                 Unterwegs
             </label>
             EOT;
-        
+
+            $isChecked5 = $orderedArticles[0]['status'] == 5 ? 'checked' : null;
+            echo <<<EOT
+            <label>
+                <input type="radio" name="status[{$ordering_id}]" value="5" {$isChecked5} /> 
+                Geliefert
+            </label>
+            EOT;
+
             echo "</section>";
             echo "<br>";
-        
+
             echo "<input type='hidden' name='ordering_id' value={$ordering_id} />";
             echo "<input type=\"submit\" value=\"Aktualisieren\"/>";
             echo "</form>";
@@ -167,4 +180,4 @@ class Fahrer extends Page
 }
 
 Fahrer::main();
-
+?>

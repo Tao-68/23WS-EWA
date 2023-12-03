@@ -6,6 +6,7 @@ class Bestellung extends Page
     protected function __construct()
     {
         parent::__construct();
+        session_start();
     }
 
     public function __destruct()
@@ -18,89 +19,91 @@ class Bestellung extends Page
         $sql = "SELECT * FROM article";
 
         $result = $this->_database->query($sql);
-        if (!$result)
+        if (!$result) {
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
-        
+        }
+
         $articles = array();
         while ($row = $result->fetch_assoc()) {
             $articles[] = $row;
         }
         $result->free();
-        //var_dump($articles);
         return $articles;
     }
 
     protected function generateView()
     {
-        //there is no picture in the database, has been set as varchar
         error_reporting(E_ALL);
-        
+    
         $articles = $this->getViewData();
         $this->generatePageHeader('Bestellung');
         echo "<h1> Bestellung </h1>";
         echo "<h2>Speisekarte</h2>";
-        foreach ($articles as $article) {
-            echo "<div>";
-            echo "<img src=\"{$article['picture']}\" alt='' width='150' height='150'/>";
-            echo "<p>{$article['name']}</p>";
-            echo "<p>{$article['price']} €</p>";
-            echo "</div>";
-        }
-
+    
+        $this->pizzaManipulation($articles);
         $this->pizzaSelection($articles);
         $this->generatePageFooter();
     }
 
+    protected function pizzaManipulation($articles)
+    {
+        $imageFolder = "../../images/";
+        foreach ($articles as $article) {
+            echo "<div id=\"pizzaImages\" data-price='{$article['price']}' data-value='{$article['article_id']}'>";
+            $imageName = str_replace(' ', '_', strtolower($article['name'])) . ".jpg";
+            $imagePath = $imageFolder . $imageName;
+    
+            if (file_exists($imagePath)) {
+                echo "<img src=\"" . htmlspecialchars($imagePath) . "\" alt='{$article['name']}' class='pizza-image' width='150' height='150' data-price='{$article['price']}' />";
+            } else {
+                echo "<p>Image not found</p>";
+            }
+            echo "<p>" . htmlspecialchars($article['name']). ": ";
+            echo "{$article['price']} €</p>";
+            echo "<input type='hidden' name='singlePizzaPrice' value='{$article['price']}' />";
+            echo "</div>";
+        }
+        echo "<div id='gesamtPreis'>Gesamtpreis: 0 €</div>";
+    }
+    
+
     protected function pizzaSelection(array $articles)
     {
-        echo "<form action='Bestellung.php' method='post'>";
+        echo "<form name='pizzaOrderForm' action='Bestellung.php' method='post'>";
         echo "<div>";
         echo "<label>";
-        echo "<select tabindex='0' name='warenkorb[]' multiple size='3'>";
-        
-        foreach ($articles as $article) 
-        {
-            echo "<option  value={$article['article_id']}>" . $article['name'] . "</option>";   
+        echo "<select tabindex='0' name='warenkorb[]' multiple='multiple' class='custom-select' >";
+
+        foreach ($articles as $article) {
+            //echo "<option value=" . htmlspecialchars($article['article_id']) ." title=". htmlspecialchars($article['price'])." label=".htmlspecialchars($article['name']).">" . htmlspecialchars($article['name']) . "</option>";
         }
-    
-        echo <<<EOT
-        </select>
-        </label>
-        </div>
-        <input type='text' value='' name='address' placeholder='Ihre Adresse'/>
-        <div>
-        <input tabindex='1' type='reset' name='deleteAll' value='Alle Löschen'/>
-        <input tabindex='2' type='button' name='delete' value='Löschen'/>
-        <input tabindex='3' type='submit' value='Bestellen'/>
-        </div>
-        </form>
-    EOT;
+
+        echo "</select>";
+        echo "</label>";
+        echo "</div>";
+        echo "<input type='text' value='' name='address' placeholder='Ihre Adresse'/>";
+        echo "<div>";
+        echo "<input tabindex='1' type='reset' name='deleteAll' value='Alle Löschen'/>";
+        echo "<input tabindex='2' type='button' name='delete' value='Löschen'/>";
+        echo "<input tabindex='3' type='submit' name='submitOrder' value='Bestellen'/>";
+        echo "</div>";
+        echo "</form>";
     }
+
 
     protected function processReceivedData()
     {
         parent::processReceivedData();
 
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') 
-        {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
             return;
         }
 
-        if (isset($_POST['warenkorb']) && is_array($_POST['warenkorb']))
-        {
+        if (isset($_POST['warenkorb'], $_POST['address']) && is_array($_POST['warenkorb']) && is_string($_POST['address'])) {
             $warenkorb = $_POST['warenkorb'];
-           // print_r($warenkorb);
+            $address = $_POST['address'];
         } 
         else 
-        {
-            return;
-        }
-
-        if (isset($_POST['address']) && is_string($_POST['address'])) 
-        {
-            $address = $_POST['address'];
-        }
-        else
         {
             return;
         }
@@ -110,36 +113,35 @@ class Bestellung extends Page
             throw new Exception("Die Lieferadresse darf nicht leer sein.");
         }
 
-        try
+        try 
         {
             $ordering_id = rand(1, 1000);
             $this->insertIntoOrdering($ordering_id, $address);
-            foreach($warenkorb as $individual_order)
-            {    
+            foreach ($warenkorb as $individual_order) {
                 $this->insertIntoOrdered($individual_order, $ordering_id);
             }
-        
+            $_SESSION['last_order_id'] = $ordering_id;
         } 
-        catch (Exception $e)
+        catch (Exception $e) 
         {
             echo $e->getMessage();
             exit;
         }
 
-        header('Location: http://localhost/Praktikum/Prak2/Bestellung.php');
+        header('Location: http://localhost/Praktikum/Prak4/backend/Bestellung.php');
     }
 
     protected function insertIntoOrdered(string $orderItem, int $ordering_id)
     {
         $sqlOrderedArticle = "INSERT INTO ordered_article (ordered_article_id, ordering_id, article_id, status) VALUES (?, ?, ?, 0)";
-        $stmtOrderedArticle = $this->_database->prepare($sqlOrderedArticle);    
-        if (!$stmtOrderedArticle) 
-        {
+        $stmtOrderedArticle = $this->_database->prepare($sqlOrderedArticle);
+
+        if (!$stmtOrderedArticle) {
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
         }
 
         $ordered_article_id = rand(1, 1000);
-        $stmtOrderedArticle->bind_param("iii", $ordered_article_id, $ordering_id, $orderItem); //using $orderItem works because when we submitted the form, we submitted an array of the field "value" ("<option  value={$article['article_id']}>") which was assigned as numbers up above
+        $stmtOrderedArticle->bind_param("iii", $ordered_article_id, $ordering_id, $orderItem);
         $stmtOrderedArticle->execute();
 
         $stmtOrderedArticle->close();
@@ -149,8 +151,8 @@ class Bestellung extends Page
     {
         $sqlOrdering = "INSERT INTO ordering (ordering_id, address, ordering_time) VALUES (?, ?, NOW())";
         $stmtOrdering = $this->_database->prepare($sqlOrdering);
-        if (!$stmtOrdering) 
-        {
+
+        if (!$stmtOrdering) {
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
         }
 
@@ -159,20 +161,17 @@ class Bestellung extends Page
         $stmtOrdering->close();
     }
 
-
     public static function main()
     {
-        try 
-        {
+        try {
             $page = new Bestellung();
             $page->processReceivedData();
             $page->generateView();
-        } 
-        catch (Exception $e) 
-        {
+        } catch (Exception $e) {
             echo $e->getMessage();
         }
     }
 }
 
 Bestellung::main();
+

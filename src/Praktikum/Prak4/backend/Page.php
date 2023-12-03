@@ -93,6 +93,8 @@ abstract class Page
         <head>
             <meta charset="UTF-8">
             <title>{$headline}</title>
+            <script src="../frontend/bestellung.js" defer></script>
+            <link rel="stylesheet" href="../styles/bestellung.css">
         </head>
         <body>
         EOT;

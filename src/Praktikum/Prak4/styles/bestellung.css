@@ -1,0 +1,14 @@
+.custom-select {
+    width: 250px;
+    height: 100px;
+    max-height: 200px; 
+    overflow-y: auto;
+}
+
+.pizza-image {
+    transition: transform 0.5s ease-out;
+}
+
+.pizza-image:hover {
+    transform: scale(1.2);
+}
