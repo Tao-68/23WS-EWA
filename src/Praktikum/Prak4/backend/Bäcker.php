@@ -93,7 +93,7 @@ class Baecker extends Page
         {
             echo "<div style='text-align: center;'>";
             echo "<h1>Zurzeit gibt es keine Bestellungen</h1>";
-            echo "<img src=\"../images/dog.jpeg\" width=500 height=500>";
+            echo "<img src=\"../../images/dog.jpeg\" width=500 height=500>";
             echo "</div>";
             return;
         }
