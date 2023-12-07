@@ -96,7 +96,7 @@ abstract class Page
             <script src="../frontend/bestellung.js" defer></script>
             <link rel="stylesheet" href="../styles/bestellung.css">
         </head>
-        <body>
+        <body style="background-color: white;">
         EOT;
 
         // to do: output common beginning of HTML code

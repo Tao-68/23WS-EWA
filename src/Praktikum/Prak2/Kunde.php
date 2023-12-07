@@ -11,6 +11,7 @@ class Kunde extends Page
 
     public function __destruct()
     {
+        //close the DB connection
         parent::__destruct();
     }
     
@@ -37,7 +38,6 @@ class Kunde extends Page
         $orderedArticles = $this->getViewData();
         header("Refresh: 5; url=http://localhost/Praktikum/Prak2/Kunde.php");
         $this->generatePageHeader('Kunde');
-
         echo "<h1>Lieferstatus: </h1>";
 
         if (sizeof($orderedArticles) == 0) 

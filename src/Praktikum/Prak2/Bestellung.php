@@ -1,15 +1,18 @@
 <?php
 require_once './Page.php';
+error_reporting(E_ALL);
 
 class Bestellung extends Page
 {
     protected function __construct()
     {
+        //initiate the DB connection
         parent::__construct();
     }
 
     public function __destruct()
     {
+        //close the DB connection
         parent::__destruct();
     }
 
@@ -22,7 +25,8 @@ class Bestellung extends Page
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
         
         $articles = array();
-        while ($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) 
+        {
             $articles[] = $row;
         }
         $result->free();
@@ -30,33 +34,38 @@ class Bestellung extends Page
     }
 
     protected function generateView()
-    {
-        //there is no picture in the database, has been set as varchar
-        error_reporting(E_ALL);
-        
+    {        
         $articles = $this->getViewData();
         $this->generatePageHeader('Bestellung');
-        echo "<h1> Bestellung </h1>";
         echo "<h2>Speisekarte</h2>";
-        foreach ($articles as $article) {
+        $imageFolder = "../images/";
+        foreach ($articles as $article) 
+        {
             echo "<div>";
-            echo "<img src=\"{$article['picture']}\" alt='' width='150' height='150'/>";
-            echo "<p>{$article['name']}</p>";
-            echo "<p>{$article['price']} €</p>";
+            $imageName = str_replace(' ', '_', strtolower($article['name'])) . ".jpg";
+            $imagePath = $imageFolder . $imageName;
+    
+            if (file_exists($imagePath))            
+                echo "<img src=\"" . htmlspecialchars($imagePath) . "\" alt='{$article['name']}' width='150' height='150'/>";        
+            else           
+                echo "<img src=\"$imageFolder" . "defaultImage.jpg\" alt='No Picture Found' width='150' height='150'/>";
+        
+            echo "<p>{$article['name']}: {$article['price']} €</p>";
             echo "</div>";
         }
-
+    
         $this->pizzaSelection($articles);
         $this->generatePageFooter();
     }
 
     protected function pizzaSelection(array $articles)
     {
-        echo "<form action='Bestellung.php' method='post'>";
-        echo "<div>";
-        echo "<label>";
-        echo "<select tabindex='0' name='warenkorb[]' multiple size='3'>";
-        
+        echo <<<EOT
+        <form action='Bestellung.php' method='post'>
+        <div>
+        <select tabindex='0' name='warenkorb[]' multiple size='3'>
+        EOT;
+    
         foreach ($articles as $article) 
         {
             echo "<option  value={$article['article_id']}>" . $article['name'] . "</option>";   
@@ -64,10 +73,9 @@ class Bestellung extends Page
     
         echo <<<EOT
         </select>
-        </label>
         </div>
         <input type='text' value='' name='address' placeholder='Ihre Adresse'/>
-        <div>
+        <div id='buttons'>
         <input tabindex='1' type='reset' name='deleteAll' value='Alle Löschen'/>
         <input tabindex='2' type='button' name='delete' value='Löschen'/>
         <input tabindex='3' type='submit' value='Bestellen'/>
@@ -111,20 +119,20 @@ class Bestellung extends Page
 
         try
         {
+            //if the PK already exists, the insert will fail, this still needs to be handled
             $ordering_id = rand(1, 1000);
             $this->insertIntoOrdering($ordering_id, $address);
             foreach($warenkorb as $individual_order)
             {    
                 $this->insertIntoOrdered($individual_order, $ordering_id);
-            }
-        
+            }   
         } 
         catch (Exception $e)
         {
             echo $e->getMessage();
             exit;
         }
-
+        //redirect to the same page to prevent resubmission
         header('Location: http://localhost/Praktikum/Prak2/Bestellung.php');
     }
 

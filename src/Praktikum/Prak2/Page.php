@@ -51,9 +51,6 @@ abstract class Page
 
         $this->_database = new MySQLi("mariadb", "public", "public", "pizzaservice");
 
-
-        //$this->_database = new MySQLi("localhost", "public", "public", "pizzaservice_2020");
-
         if (mysqli_connect_errno())
             throw new Exception("Connect failed: " . mysqli_connect_error());
 
@@ -70,7 +67,6 @@ abstract class Page
     public function __destruct()
     {
         $this->_database->close();
-        // to do: close database
     }
 
     /**
@@ -96,9 +92,6 @@ abstract class Page
         </head>
         <body>
         EOT;
-
-        // to do: output common beginning of HTML code
-        // including the individual headline
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
-
 require_once './Page.php';
+error_reporting(E_ALL);
 
 class Baecker extends Page
 {
@@ -12,12 +12,17 @@ class Baecker extends Page
 
     public function __destruct()
     {
+        //close the DB connection
         parent::__destruct();
     }
 
     protected function getViewData()
     {
-        $sql = "SELECT ordered_article_id, ordering_id, ordered_article.article_id, status , article.name FROM ordered_article LEFT JOIN article ON ordered_article.article_id = article.article_id";
+        $sql = "SELECT ordered_article.ordered_article_id, ordered_article.ordering_id, ordered_article.article_id, ordered_article.status, article.name 
+        FROM ordered_article LEFT JOIN article 
+        ON ordered_article.article_id = article.article_id
+        WHERE ordered_article.status <= 3"; //if the article is already unterwegs, we dont care about it anymore
+
         $result = $this->_database->query($sql);
         if (!$result)
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
@@ -25,7 +30,7 @@ class Baecker extends Page
         $orderedArticles = array();
         while ($row = $result->fetch_assoc())
         {
-            $orderedArticles[] = $row;
+            $orderedArticles[] = $row; //alternatively: array_push($orderedArticles, $row)
         }
         $result->free();
         return $orderedArticles;
@@ -42,7 +47,6 @@ class Baecker extends Page
 
         if (isset($_POST['ordered_article_id']) && is_numeric($_POST['ordered_article_id'])) {
             $id = $_POST['ordered_article_id'];
-           // echo $id;
         } 
         else 
         {
@@ -60,7 +64,6 @@ class Baecker extends Page
         }
 
         $this->updateTableOrderedArticle($id,$status);
-       
         //redirect to same page after processing 
         header('Location: http://localhost/Praktikum/Prak2/Bäcker.php');
     }
@@ -68,17 +71,18 @@ class Baecker extends Page
     
     protected function updateTableOrderedArticle($id, $status)
     {
-        $sqlUpdateStatus = "UPDATE ordered_article SET ordered_article.status = $status WHERE ordered_article.ordered_article_id = $id";
+        $sqlUpdateStatus = "UPDATE ordered_article SET ordered_article.status = ? WHERE ordered_article.ordered_article_id = ?";
         $stmtUpdateStatus = $this->_database->prepare($sqlUpdateStatus);
-        if (!$stmtUpdateStatus)
-        {
-            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
-        }
 
+        if (!$stmtUpdateStatus) 
+            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
+        
+        $stmtUpdateStatus->bind_param("ii", $status, $id);
         $stmtUpdateStatus->execute();
         $stmtUpdateStatus->close();
-        //echo $sqlUpdateStatus;
+        // echo $sqlUpdateStatus;
     }
+
 
     protected function generateView()
     {
@@ -86,9 +90,8 @@ class Baecker extends Page
     
         header("Refresh: 5; url=http://localhost/Praktikum/Prak2/B%C3%A4cker.php");
         $this->generatePageHeader('Bäcker');
-
         echo "<h1>Bäcker</h1>";
-
+        
         if (sizeof($orderedArticles) == 0) 
         {
             echo "<div style='text-align: center;'>";
@@ -101,11 +104,8 @@ class Baecker extends Page
         foreach ($orderedArticles as $orderedArticle) 
         {
             $status = intval($orderedArticle['status']);
-            if ($status > 3)
-                continue;
-        
             echo "<form action=\"Bäcker.php\" method=\"post\">";
-            
+
             // check if keys exist before accessing them
             $id = isset($orderedArticle['ordering_id']) ? $orderedArticle['ordering_id'] : '<Unknown ID>';
             $name = isset($orderedArticle['name']) ? $orderedArticle['name'] : '<Unknown Name>';
@@ -114,8 +114,8 @@ class Baecker extends Page
             echo "<input type='hidden' name='ordered_article_id' value={$toSubmit} />";
             echo <<<EOT
             <section>
-                <h2>Order #{$id}: {$name}</h2>
-                <p>Status:</p>
+            <h2>Order #{$id}: {$name}</h2>
+            <p>Status:</p>
             EOT;
 
             $radioButtons = [
@@ -125,7 +125,8 @@ class Baecker extends Page
                 3 => 'Warte zur Abholung',
             ];
             //for each key value pair in the "dictionary" radiobuttons, where 0...3 are $key and the texts are $value
-            foreach ($radioButtons as $key => $value) {
+            foreach ($radioButtons as $key => $value) 
+            {
                 $isChecked = $status == $key ? 'checked' : ' ';
                 echo <<<EOT
                     <input type="radio" name="food_status" value={$key} {$isChecked} /> 
@@ -137,11 +138,10 @@ class Baecker extends Page
             echo "<input type=\"submit\" value=\"Aktualisieren\"/>";
             echo "</form>";
         }
-
         $this->generatePageFooter();
     }
 
-    static function main()
+    public static function main()
     {
         try
         {
@@ -159,3 +159,6 @@ class Baecker extends Page
 
 //since main is marked as static func, it doesnt need an instance of a class to be called
 Baecker::main();
+
+
+
