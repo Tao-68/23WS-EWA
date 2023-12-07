@@ -45,7 +45,8 @@ class Baecker extends Page
             return;
         }
 
-        if (isset($_POST['ordered_article_id']) && is_numeric($_POST['ordered_article_id'])) {
+        if (isset($_POST['ordered_article_id']) && is_numeric($_POST['ordered_article_id'])) 
+        {
             $id = $_POST['ordered_article_id'];
         } 
         else 
