@@ -6,15 +6,15 @@ require_once "./Page.php";
 
 class Index extends Page
 {
-    // protected function __construct()
-    // {
-    //     parent::__construct();
-    // }
+    protected function __construct()
+    {
+        parent::__construct();
+    }
 
-    // public function __destruct()
-    // {
-    //     parent::__destruct();
-    // }
+    public function __destruct()
+    {
+        parent::__destruct();
+    }
 
     protected function generatePageHeader($headline = "")
     {
@@ -26,7 +26,7 @@ class Index extends Page
         <head>
             <meta charset="UTF-8">
             <title>{$headline}</title>
-            <link rel="stylesheet" href="styles/styles.css">
+            <link rel="stylesheet" href="../styles/styles.css">
         </head>
         <body>
         EOT;
@@ -41,7 +41,7 @@ class Index extends Page
         $files = glob('*.php'); //get all the files from CWD with extension PHP
         foreach ($files as $file) 
         { 
-            if ($file == 'Index.php') continue;
+            if ($file == 'index.php') continue;
             //PATHINFO_DIRNAME->get the dir , PATHINFO_BASENAME->get the full name, PATHINFO_EXTENSION->get the extension, PATHINFO_FILENAME->get file name without extension       
             $filename = pathinfo($file, PATHINFO_FILENAME);
             echo "<li><a href=\"$file\" target=\"_blank\">$filename</a></li>";        
