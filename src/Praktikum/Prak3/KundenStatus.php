@@ -30,19 +30,15 @@ class Kunde extends Page
                 WHERE ordered_article.ordering_id = ?";
 
         $stmt = $this->_database->prepare($sql);
-        if (!$stmt) 
-        {
-            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
-        }
+        if (!$stmt)       
+            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);     
 
         $stmt->bind_param("i", $lastOrderID);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if (!$result) 
-        {
-            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
-        }
+        if (!$result)       
+            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);  
 
         $orderedArticles = array();
         while ($row = $result->fetch_assoc()) 
@@ -58,18 +54,16 @@ class Kunde extends Page
     protected function generateView()
     {
         $orderedArticles = $this->getViewData();
-        //JSON is a common format for transmitting data between a server and a web application.The client-side code (JS) can easily consume and 
-        //work with JSON data.JS on the client side can use the fetch API to make an HTTP request to this page and receive the JSON response. 
-        //which it can then use to dynamically update the content of the webpage based on the received data from the back end.
         header("Content-Type: application/json; charset=UTF-8");     
         $data = json_encode($orderedArticles);
+        //if you dont echo, AJAX request will not work
         echo $data;
     }
 
     public static function main()
     {
         try
-         {
+        {
             $page = new Kunde();
             $page->processReceivedData();
             $page->generateView();

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 require_once "./Page.php";
 
 class Fahrer extends Page
@@ -11,16 +12,17 @@ class Fahrer extends Page
 
     public function __destruct()
     {
+        // close the DB connection
         parent::__destruct();
     }
 
     protected function getViewData()
     {
         $sql = "SELECT ordered_article.ordered_article_id, ordered_article.article_id, ordered_article.ordering_id, ordered_article.status, ordering.address, article.price
-        FROM ordered_article
-        LEFT JOIN ordering ON ordered_article.ordering_id = ordering.ordering_id
-        LEFT JOIN article ON ordered_article.article_id = article.article_id
-        WHERE ordered_article.status >= 3";
+                FROM ordered_article
+                LEFT JOIN ordering ON ordered_article.ordering_id = ordering.ordering_id
+                LEFT JOIN article ON ordered_article.article_id = article.article_id
+                WHERE ordered_article.status > 2 AND ordered_article.status < 5"; //since we only want to show the orders that are in the process of being delivered
 
         $result = $this->_database->query($sql);
         if (!$result)
@@ -50,50 +52,62 @@ class Fahrer extends Page
         parent::processReceivedData();
 
         if ($_SERVER['REQUEST_METHOD'] != 'POST') 
-        {
             return;
-        }
-
+        
         if (isset($_POST['ordering_id']) && is_numeric($_POST['ordering_id'])) 
-        {
             $ordering_id = $_POST['ordering_id'];
-        } 
         else 
-        {
-            return;
-        }
+            return;  
 
         if (isset($_POST['status'][$ordering_id]) && is_numeric($_POST['status'][$ordering_id])) 
         {
             $status = $_POST['status'][$ordering_id];
-            //echo htmlspecialchars($status);
-            if ($status == 3) 
+            switch ($status) 
             {
-                $updateSql = "UPDATE ordered_article SET status = 3 WHERE ordering_id = $ordering_id AND status = 4";
-                $result = $this->_database->query($updateSql);
-
-                if (!$result) 
-                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);              
-            }
-            if ($status == 4) 
-            {
-                $updateSql = "UPDATE ordered_article SET status = 4 WHERE ordering_id = $ordering_id AND status = 3";
-                $result = $this->_database->query($updateSql);
-
-                if (!$result) 
-                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);               
-            }
-            if ($status == 5) 
-            {
-                $updateSql = "UPDATE ordered_article SET status = 5 WHERE ordering_id = $ordering_id";
-                $result = $this->_database->query($updateSql);
-
-                if (!$result) 
-                    throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);               
+                case 3:
+                    $this->updateStatus($ordering_id, 3, 4);
+                    break;
+                case 4:
+                    $this->updateStatus($ordering_id, 4, 3);
+                    break;
+                case 5:
+                    $this->updateStatus($ordering_id, 5);
+                    break;
+                default:           
+                    break;
             }
         }
 
         header('Location: http://localhost/Praktikum/Prak3/Fahrer.php');
+    }
+
+    protected function updateStatus($ordering_id, $newStatus, $oldStatus=null)
+    {
+        $updateSql = "";
+        //if old status is not given, then that means we dont care about the old status and we just update the status to the new status
+        //because in scenarios like when the driver is delivering the order but forgot to update the status to "unterwegs" and the customer
+        //has already received the order, the driver can still update the status directly to "geliefert" without having to update the status to "unterwegs" 
+        //first and then again to "geliefert"
+        if($oldStatus === null)
+            $updateSql = "UPDATE ordered_article SET status = ? WHERE ordering_id = ?";
+        else
+            $updateSql = "UPDATE ordered_article SET status = ? WHERE ordering_id = ? AND status= ?";
+        
+        $stmt = $this->_database->prepare($updateSql);
+
+        if (!$stmt) 
+            throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);
+        
+        if ($oldStatus !== null) 
+            $stmt->bind_param("iii", $newStatus, $ordering_id, $oldStatus);
+        else 
+            $stmt->bind_param("ii", $newStatus, $ordering_id);
+        
+        $result = $stmt->execute();
+        $stmt->close();
+
+        if (!$result) 
+            throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);  
     }
 
 
@@ -104,7 +118,6 @@ class Fahrer extends Page
         $this->generatePageHeader('Fahrer');
 
         echo "<h1>Fahrer</h1>";
-
         if (sizeof($bestellungen) == 0) 
         {
             echo "<div style='text-align: center;'>";
@@ -120,15 +133,15 @@ class Fahrer extends Page
             {
                 $value += $i['price'];
                 return $value;
-            }, 0);
+            }, 0);        
 
-            echo "<h3>Order #{$ordering_id}: {$orderedArticles[0]['address']}.</h3>";
-            echo "<h3> Summe: {$price} EURO</h3>";
-
-            echo "<form action=\"Fahrer.php\" method=\"post\">";
-            echo "<section>";
-            echo "<p>Status:</p>";
-
+            echo<<<EOT
+            <h3>Order #{$ordering_id}: {$orderedArticles[0]['address']}.</h3>
+            <h3> Summe: {$price} EURO</h3>
+            <form action="Fahrer.php" method="post">
+            <section>
+            <p>Status:</p>
+            EOT;
             $isChecked2 = $orderedArticles[0]['status'] == 3 ? 'checked' : null;
             echo <<<EOT
             <label>
@@ -153,12 +166,13 @@ class Fahrer extends Page
             </label>
             EOT;
 
-            echo "</section>";
-            echo "<br>";
-
-            echo "<input type='hidden' name='ordering_id' value={$ordering_id} />";
-            echo "<input type=\"submit\" value=\"Aktualisieren\"/>";
-            echo "</form>";
+            echo <<<EOT
+            </section>
+            <br>
+            <input type='hidden' name='ordering_id' value={$ordering_id} />
+            <input type="submit" value="Aktualisieren"/>
+            </form>
+            EOT;
         }
 
         $this->generatePageFooter();
@@ -180,4 +194,4 @@ class Fahrer extends Page
 }
 
 Fahrer::main();
-?>
+

@@ -19,7 +19,7 @@ ul {
 
 li {
     display: inline-block;
-    margin: 3px 15px;
+    margin: 6px 15px;
 }
 
 a {
@@ -32,7 +32,7 @@ a {
 
 a:hover {
     color: #b3b3b3;
-    font-size: 26px; 
+    font-size: 28px; 
 }
 
 
