@@ -65,10 +65,10 @@ class Fahrer extends Page
             switch ($status) 
             {
                 case 3:
-                    $this->updateStatus($ordering_id, 3, 4);
+                    $this->updateStatus($ordering_id, 3);
                     break;
                 case 4:
-                    $this->updateStatus($ordering_id, 4, 3);
+                    $this->updateStatus($ordering_id, 4);
                     break;
                 case 5:
                     $this->updateStatus($ordering_id, 5);
@@ -84,10 +84,7 @@ class Fahrer extends Page
     protected function updateStatus($ordering_id, $newStatus, $oldStatus=null)
     {
         $updateSql = "";
-        //if old status is not given, then that means we dont care about the old status and we just update the status to the new status
-        //because in scenarios like when the driver is delivering the order but forgot to update the status to "unterwegs" and the customer
-        //has already received the order, the driver can still update the status directly to "geliefert" without having to update the status to "unterwegs" 
-        //first and then again to "geliefert"
+        //if old status is not given, then that means we dont care about the old status and we just update the status to the new status because in scenarios like when the driver is delivering the order but forgot to update the status to "unterwegs" and the customer has already received the order, the driver can still update the status directly to "geliefert" without having to update the status to "unterwegs" first and then again to "geliefert". Also in our case since we group the orders into one order, updating the status should affect all the orders in the Database regardless of their old status
         if($oldStatus === null)
             $updateSql = "UPDATE ordered_article SET status = ? WHERE ordering_id = ?";
         else
@@ -98,10 +95,7 @@ class Fahrer extends Page
         if (!$stmt) 
             throw new Exception("Fehler beim Aktualisieren des Status: " . $this->_database->error);
         
-        if ($oldStatus !== null) 
-            $stmt->bind_param("iii", $newStatus, $ordering_id, $oldStatus);
-        else 
-            $stmt->bind_param("ii", $newStatus, $ordering_id);
+        $stmt->bind_param("ii", $newStatus, $ordering_id);
         
         $result = $stmt->execute();
         $stmt->close();
@@ -129,11 +123,9 @@ class Fahrer extends Page
 
         foreach ($bestellungen as $ordering_id => $orderedArticles) 
         {
-            $price = array_reduce($orderedArticles, function ($value, $i) 
-            {
-                $value += $i['price'];
-                return $value;
-            }, 0);        
+            $price = array_reduce($orderedArticles, fn($value, $i) =>
+                    $value + $i['price'], 0);
+            $price = number_format($price, 2, ',', '.'); //because we use , as decimal separator here in Germany
 
             echo<<<EOT
             <h3>Order #{$ordering_id}: {$orderedArticles[0]['address']}.</h3>
@@ -145,16 +137,16 @@ class Fahrer extends Page
             $isChecked2 = $orderedArticles[0]['status'] == 3 ? 'checked' : null;
             echo <<<EOT
             <label>
-                <input type="radio" name="status[{$ordering_id}]" value="3" {$isChecked2} /> 
-                Warte zur Abholung
+            <input type="radio" name="status[{$ordering_id}]" value="3" {$isChecked2} /> 
+            Warte auf Abholung
             </label>
             EOT;
 
             $isChecked3 = $orderedArticles[0]['status'] == 4 ? 'checked' : null;
             echo <<<EOT
             <label>
-                <input type="radio" name="status[{$ordering_id}]" value="4" {$isChecked3} /> 
-                Unterwegs
+            <input type="radio" name="status[{$ordering_id}]" value="4" {$isChecked3} /> 
+            Unterwegs
             </label>
             EOT;
 

@@ -129,7 +129,7 @@ class Bestellung extends Page
         header('Location: http://localhost/Praktikum/Prak3/Bestellung.php');
     }
 
-    protected function insertIntoOrdered(string $orderItem, int $ordering_id)
+    protected function insertIntoOrdered(string $orderItem, int $ordering_id, int $status=0)
     {
         $sqlOrderedArticle = "INSERT INTO ordered_article (ordered_article_id, ordering_id, article_id, status) VALUES (?, ?, ?, ?)";
         $stmtOrderedArticle = $this->_database->prepare($sqlOrderedArticle);
@@ -138,7 +138,7 @@ class Bestellung extends Page
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
         
         $ordered_article_id = rand(1, 1000);
-        $stmtOrderedArticle->bind_param("iiii", $ordered_article_id, $ordering_id, $orderItem, 0);
+        $stmtOrderedArticle->bind_param("iiii", $ordered_article_id, $ordering_id, $orderItem, $status);
         $stmtOrderedArticle->execute();
 
         $stmtOrderedArticle->close();

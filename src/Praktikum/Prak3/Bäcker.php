@@ -53,7 +53,7 @@ class Baecker extends Page
         else     
             return;
         
-        $this->updateTableOrderedArticle($id,$status);  
+        $this->updateTableOrderedArticle($id,$currentStatus);  
         //redirect to same page after processing 
         header('Location: http://localhost/Praktikum/Prak3/Bäcker.php');
     }
@@ -95,7 +95,7 @@ class Baecker extends Page
         foreach ($orderedArticles as $orderedArticle) 
         {
            $currentStatus = intval($orderedArticle['status']);
-            if ($status <= 3) 
+            if ($currentStatus <= 3) 
             {
                 $hasOrdersToBake = true;
                 break;
@@ -115,8 +115,9 @@ class Baecker extends Page
         foreach ($orderedArticles as $orderedArticle) 
         {
            $currentStatus = intval($orderedArticle['status']);
-            if ($status > 3) //since backer only cares about the orders that are not yet "unterwegs" or "geliefert"
-        
+            if ($currentStatus > 3) //since backer only cares about the orders that are not yet "unterwegs" or "geliefert"
+                continue;
+            
             echo "<form action=\"Bäcker.php\" method=\"post\">";
             
             // check if keys exist before accessing them
@@ -150,7 +151,7 @@ class Baecker extends Page
             echo<<<EOT
             </section>
             <br>
-            <input type=\"submit\" value=\"Aktualisieren\"/>
+            <input type="submit" value="Aktualisieren" \>
             </form>
             EOT;
         }

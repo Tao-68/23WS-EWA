@@ -56,7 +56,7 @@ class Fahrer extends Page
         $orderedArticles = $this->getViewData();
         header("Content-Type: application/json; charset=UTF-8");     
         $data = json_encode($orderedArticles);
-        //if not echoed, the client side JS wont be able to receive the data and also the request will fail
+        //if not echoed,sometimes the client side JS may not be able to receive the data and the request may even fail
         echo $data;
     }
 

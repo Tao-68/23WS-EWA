@@ -56,7 +56,7 @@ class Kunde extends Page
         $orderedArticles = $this->getViewData();
         header("Content-Type: application/json; charset=UTF-8");     
         $data = json_encode($orderedArticles);
-        //if you dont echo, AJAX request will not work
+        //if you dont echo, AJAX request may not work
         echo $data;
     }
 
