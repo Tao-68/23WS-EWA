@@ -22,7 +22,7 @@ class Baecker extends Page
         FROM ordered_article LEFT JOIN article 
         ON ordered_article.article_id = article.article_id
         WHERE ordered_article.status <= 3"; //if the article is already unterwegs, we dont care about it anymore
-
+ 
         $result = $this->_database->query($sql);
         if (!$result)
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);

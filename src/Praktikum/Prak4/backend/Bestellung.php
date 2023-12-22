@@ -33,9 +33,9 @@ class Bestellung extends Page
 
     protected function generateView()
     {
-        error_reporting(E_ALL);
     
         $articles = $this->getViewData();
+
         $this->generatePageHeader('Bestellung');
         echo "<div class='contactContainer'>";
         echo "<div id='contact-us-link' class='contactUs'><a href='https://h-da.de'><img class='contactImages' src='../../images/ContactUs.png' alt='Contact Us'></a></div>";
@@ -57,13 +57,13 @@ class Bestellung extends Page
             $imageName = str_replace(' ', '_', strtolower($article['name'])) . ".jpg";
             $imagePath = $imageFolder . $imageName;
     
-            if (file_exists($imagePath)) {
+            if (file_exists($imagePath)) 
                 echo "<img src=\"" . htmlspecialchars($imagePath) . "\" alt='{$article['name']}' class='pizza-image' width='150' height='150' data-price='{$article['price']}' />";
-            } else {
-                echo "<p>Image not found</p>";
-            }
+            else           
+                echo "<img src=\"$imageFolder" . "defaultImage.jpg\" alt='No Picture Found' width='150' height='150'/>";
+
             echo "<p class='pizza-name'>" . htmlspecialchars($article['name']). ": ";
-           echo number_format($article['price'], 2) . " €</p>";
+            echo number_format($article['price'], 2) . " €</p>";
             echo "<input type='hidden' name='singlePizzaPrice' value='{$article['price']}' />";
             echo "</div>";
         }

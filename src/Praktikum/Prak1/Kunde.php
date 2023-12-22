@@ -7,12 +7,10 @@ echo <<<CUSTOMER
     <title>Kunde</title>
 </head>
 <body>
-<h4>Ihre Lieferstatus: </h4>
-<div>
-<p> Order#2342:</p>
-<p>Salami: Fertig</p>
-<p>Hawai: Bereit</p>
-</div>
+    <h3>Ihre Lieferstatus: </h3>
+    <p> Order#2342:</p>
+    <p>Salami: Fertig</p>
+    <p>Hawai: Bereit</p>
 </body>
 </html>
 CUSTOMER;

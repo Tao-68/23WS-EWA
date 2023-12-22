@@ -1,5 +1,6 @@
 <?php
 require_once "./Page.php";
+error_reporting(E_ALL);
 
 class Kunde extends Page
 {
@@ -24,20 +25,17 @@ class Kunde extends Page
                 WHERE ordered_article.ordering_id = ?";
 
         $stmt = $this->_database->prepare($sql);
-        if (!$stmt) 
-        {
-            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
-        }
 
+        if (!$stmt)      
+            throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
+        
         $stmt->bind_param("i", $lastOrderID);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if (!$result) 
-        {
+        if (!$result)       
             throw new Exception("Fehler ist aufgetreten: " . $this->_database->error);
-        }
-
+        
         $orderedArticles = array();
         while ($row = $result->fetch_assoc()) 
         {
@@ -98,10 +96,8 @@ class Kunde extends Page
                     break;
             }
 
-            if (!isset($groupedOrders[$orderId])) 
-            {
-                $groupedOrders[$orderId] = array();
-            }
+            if (!isset($groupedOrders[$orderId]))        
+                $groupedOrders[$orderId] = array();         
 
             $groupedOrders[$orderId][] = array(
                 'pizzaName' => $pizzaName,
@@ -126,29 +122,19 @@ class Kunde extends Page
     {
         parent::processReceivedData();
 
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') 
-        {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST')     
             return;
-        }
-
-        if (isset($_POST['ordered_article_id']) && is_numeric($_POST['ordered_article_id'])) 
-        {
+    
+        if (isset($_POST['ordered_article_id']) && is_numeric($_POST['ordered_article_id']))       
             $id = $_POST['ordered_article_id'];
-        } 
-        else 
-        {
-            return;
-        }
+        else      
+            return;    
 
-        if (isset($_POST['status']) && is_numeric($_POST['status']))       
-        {
-            $status = $_POST['status'];
-        } 
-        else 
-        {
+        if (isset($_POST['status']) && is_numeric($_POST['status']))          
+            $status = $_POST['status'];     
+        else       
             return;
-        }
-
+        
         $_SESSION['last_order_id'] = $id;
 
         header('Location: http://localhost/Praktikum/Prak3/Kunde.php');
@@ -170,4 +156,3 @@ class Kunde extends Page
 }
 
 Kunde::main();
-?>
