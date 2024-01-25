@@ -32,8 +32,7 @@ class Index extends Page
         $files = glob('*.php'); 
         foreach ($files as $file) 
         { 
-            if ($file == 'Index.php') continue;
-        
+            if (strtolower($file) == 'index.php') continue;        
             //PATHINFO_DIRNAME->get the dir , PATHINFO_BASENAME->get the full name, PATHINFO_EXTENSION->get the extension, PATHINFO_FILENAME->get file name without extension       
             $filename = pathinfo($file, PATHINFO_FILENAME);
             echo "<li><a href=\"$file\" target=\"_blank\">$filename</a></li>";        
@@ -58,6 +57,6 @@ class Index extends Page
 }
 
 Index::main();
-//This function flushes the output buffer, sending its contents to the browser and turning off output buffering.
+// flushes the output buffer, sending its contents to the browser and turning off output buffering.
 ob_end_flush();
 

@@ -120,9 +120,9 @@ class Fahrer extends Page
                 $value += $i['price'];
                 return $value;
             }, 0);
-
+            $address = htmlspecialchars($orderedArticles[0]['address']);
             echo "<form id=\"fahrerForm{$ordering_id}\" action=\"Fahrer.php\" method=\"post\" data-name=\"fahrerForm{$ordering_id}\">";
-            echo "<h3>Order #{$ordering_id}: {$orderedArticles[0]['address']}.</h3>";
+            echo "<h3>Order #{$ordering_id}: {$address}.</h3>";
             echo "<h3> Summe: {$price} EURO</h3>";   
             echo "<section>";
             echo "<p>Status:</p>";

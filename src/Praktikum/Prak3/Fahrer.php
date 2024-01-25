@@ -126,9 +126,9 @@ class Fahrer extends Page
             $price = array_reduce($orderedArticles, fn($value, $i) =>
                     $value + $i['price'], 0);
             $price = number_format($price, 2, ',', '.'); //because we use , as decimal separator here in Germany
-
+            $address = htmlspecialchars($orderedArticles[0]['address']);
             echo<<<EOT
-            <h3>Order #{$ordering_id}: {$orderedArticles[0]['address']}.</h3>
+            <h3>Order #{$ordering_id}: {$address}.</h3>
             <h3> Summe: {$price} EURO</h3>
             <form action="Fahrer.php" method="post">
             <section>
