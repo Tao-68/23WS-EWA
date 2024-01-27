@@ -34,7 +34,7 @@ class Bestellung extends Page
     protected function generateView()
     {
     
-        $articles = $this->getViewData();
+        $articles =$this->getViewData();
 
         $this->generatePageHeader('Bestellung');
         echo "<div class='contactContainer'>";
@@ -72,22 +72,22 @@ class Bestellung extends Page
     
 
     protected function pizzaSelection(array $articles)
-{
-    echo "<form id='pizzaOrderForm' name='pizzaOrderForm' action='Bestellung.php' method='post'>";
-    echo "<div>";
-    echo "<label>";
-    echo "<select tabindex='0' name='warenkorb[]' class='custom-select' id='pizzaSelector'>";
-    echo "</select>";
-    echo "</label>";
-    echo "</div>";
-    echo "<input type='text' value='' name='address' placeholder='Schöfferstraße 3, 64295 Darmstadt' class='address-Input'/>";
-    echo "<div>";
-    echo "<input tabindex='1' type='reset' name='deleteAll' value='Alle Löschen' class='buttons'/>";
-    echo "<input tabindex='2' type='button' name='delete' value='Löschen' class='buttons'/>";
-    echo "<input tabindex='3' type='submit' name='submitOrder' value='Bestellen' class='buttons'/>";
-    echo "</div>";
-    echo "</form>";
-} 
+    {
+        echo "<form id='pizzaOrderForm' name='pizzaOrderForm' action='Bestellung.php' method='post'>";
+        echo "<div>";
+        echo "<label>";
+        echo "<select tabindex='0' name='warenkorb[]' class='custom-select' id='pizzaSelector'>";
+        echo "</select>";
+        echo "</label>";
+        echo "</div>";
+        echo "<input type='text' value='' name='address' placeholder='Schöfferstraße 3, 64295 Darmstadt' class='address-Input'/>";
+        echo "<div class=\"center-div\">";
+        echo "<input tabindex='1' type='reset' name='deleteAll' value='Alle Löschen' class='buttons'/>";
+        echo "<input tabindex='2' type='button' name='delete' value='Löschen' class='buttons'/>";
+        echo "<input tabindex='3' type='submit' name='submitOrder' value='Bestellen' class='buttons'/>";
+        echo "</div>";
+        echo "</form>";
+    } 
 
 
 
