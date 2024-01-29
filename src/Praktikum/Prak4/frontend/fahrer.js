@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    "use strict";
     var forms = document.querySelectorAll("form[data-name]");
     
     forms.forEach((form) => {
@@ -10,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function processFahrer() 
 {
+    "use strict";
     var xhr = new XMLHttpRequest();
     //ajax makes a get request, fahrerstatus.php receives it, executes its fahrer::main() function where the generateView will echo the JSON data which is then received as ajax response    
     xhr.open('GET', 'FahrerStatus.php', true);
@@ -25,6 +27,7 @@ function processFahrer()
 
 function updateDOM(data) 
 { 
+    "use strict";
     if (data && data.length > 0) 
     {
         //item is a dictionary(key-value pair) in the data array
@@ -41,6 +44,7 @@ function updateDOM(data)
 //when new orders come in we might have to add to the DOM but for now we will just update the status
 function updateOrCreateDOM(statusCode, ordered_article_id, pizzaName,orderingId) 
 {
+    "use strict";
     var searchedForm = document.querySelector(`form[id="fahrerForm${orderingId}"]`);
     if (searchedForm) 
     {

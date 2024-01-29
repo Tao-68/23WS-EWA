@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    "use strict";
     var forms = document.querySelectorAll("form[data-name]");
     forms.forEach((form) => {
         form.addEventListener("change", () => {

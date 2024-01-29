@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const deleteButton = document.querySelector('input[name="delete"]');
     deleteButton.addEventListener('click', () => {
+      "use strict";
         // Remove the selected options
         const selectedOptions = pizzaSelect.selectedOptions;
         for (const option of selectedOptions) 

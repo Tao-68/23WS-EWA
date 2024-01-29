@@ -41,7 +41,7 @@ class Bestellung extends Page
         echo "<div id='contact-us-link' class='contactUs'><a href='https://h-da.de'><img class='contactImages' src='../../images/ContactUs.png' alt='Contact Us'></a></div>";
         echo "<div id='github-link' class='contactUs'><a href='https://code.fbi.h-da.de' target='_blank'><img class='contactImages' src='../../images/Github.png' alt='GitHub'></a></div>";
         echo "</div>";
-        echo "<img src=\"../../images/banner.png\" alt='Dough Delight' class='banner'/>";
+        echo "<h1 class= 'main-Heading'> Dought Delight </h1>";
         echo "<h2 class='main-Heading'>Speisekarte</h2>";
        
         $this->pizzaManipulation($articles);
@@ -52,13 +52,15 @@ class Bestellung extends Page
     protected function pizzaManipulation($articles)
     {
         $imageFolder = "../../images/";
+        echo "<div id='gesamtPreis'> <p>Gesamtpreis: 0 €</p></div>";
+        echo "<section id= image_section>";
         foreach ($articles as $article) {
-            echo "<div id=\"pizzaImages\" data-price='{$article['price']}' data-value='{$article['article_id']}'>";
+            echo "<div id=\"pizzaImageDiv\" data-price='{$article['price']}' data-value='{$article['article_id']}'>";
             $imageName = str_replace(' ', '_', strtolower($article['name'])) . ".jpg";
             $imagePath = $imageFolder . $imageName;
     
             if (file_exists($imagePath)) 
-                echo "<img src=\"" . htmlspecialchars($imagePath) . "\" alt='{$article['name']}' class='pizza-image' width='150' height='150' data-price='{$article['price']}' />";
+                echo "<img src=\"" . htmlspecialchars($imagePath) . "\" alt='{$article['name']}' class='pizza-image' data-price='{$article['price']}' />";
             else           
                 echo "<img src=\"$imageFolder" . "defaultImage.jpg\" alt='No Picture Found' width='150' height='150'/>";
 
@@ -66,8 +68,8 @@ class Bestellung extends Page
             echo number_format($article['price'], 2) . " €</p>";
             echo "<input type='hidden' name='singlePizzaPrice' value='{$article['price']}' />";
             echo "</div>";
-        }
-        echo "<div id='gesamtPreis' style='display: none;'>Gesamtpreis: 0 €</div>";
+        }   
+        echo "</section>";   
     }
     
 
