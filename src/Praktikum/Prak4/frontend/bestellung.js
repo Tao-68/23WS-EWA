@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const pizzaOrderForm = document.forms['pizzaOrderForm'];
   const submitOrder = document.querySelector('input[name="submitOrder"]'); 
   //const submitOrder = document.getElementsByName('submitOrder')[0]; //since we get a NodeListOf<>, we have to use indexing here
-  submitOrder.disabled = true ;
+  submitOrder.disabled = true;
   
   //get the very first input element with the name 'warenkorb[]' (querySelector returns the first element that matches the criteria unlike getElementsByName)
   const pizzaSelect = document.querySelector('select[name="warenkorb[]"]');
@@ -14,8 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
   
   function updateTotalPrice()
   {
+    "use strict";
     if (totalPriceDiv.innerText.trim() === 'Gesamtpreis: 0 €') 
+    {
+      console.log('sds');
       totalPriceDiv.style.display = 'none';
+    }
   
     var total = 0;
     const allOptions = pizzaSelect.options;
@@ -83,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-  const pizzaDivs = document.querySelectorAll('div[id="pizzaImages"]');
+  const pizzaDivs = document.querySelectorAll('div[id="pizzaImageDiv"]');
   pizzaDivs.forEach((pizzaDiv) => {
     const pizzaImage = pizzaDiv.querySelector('img');
     pizzaImage.addEventListener('click', () => {

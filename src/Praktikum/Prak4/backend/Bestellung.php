@@ -51,8 +51,7 @@ class Bestellung extends Page
 
     protected function pizzaManipulation($articles)
     {
-        $imageFolder = "../../images/";
-        echo "<div id='gesamtPreis'> <p>Gesamtpreis: 0 €</p></div>";
+        $imageFolder = "../../images/";       
         echo "<section id= image_section>";
         foreach ($articles as $article) {
             echo "<div id=\"pizzaImageDiv\" data-price='{$article['price']}' data-value='{$article['article_id']}'>";
@@ -67,8 +66,9 @@ class Bestellung extends Page
             echo "<p class='pizza-name'>" . htmlspecialchars($article['name']). ": ";
             echo number_format($article['price'], 2) . " €</p>";
             echo "<input type='hidden' name='singlePizzaPrice' value='{$article['price']}' />";
-            echo "</div>";
+            echo "</div>";     
         }   
+        echo "<div id='gesamtPreis' style=\"display=none;\">Gesamtpreis: 0 €</div>";
         echo "</section>";   
     }
     
