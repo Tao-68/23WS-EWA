@@ -1,5 +1,6 @@
 function process() 
 {
+    "use strict";
     console.log(Math.random());
     var xhr = new XMLHttpRequest();
     //ajax makes a get request, kundenstatus.php receives it, executes its Kunde::main() function where the generateView will echo the JSON data which is then received as ajax response    
@@ -17,6 +18,7 @@ function process()
 
 function updateDOM(data) 
 { 
+    "use strict";
     if (data && data.length > 0) 
     {
         //item is a dictionary(key-value pair) in the data array
@@ -32,6 +34,7 @@ function updateDOM(data)
 
 function updateOrCreateDOM(orderId, pizzaName, statusCode, ordered_article_id) 
 {
+    "use strict";
     var orderDiv = document.querySelector(`div[id="order_${orderId}"]`);
     var existingHiddenInput = document.querySelector(`input[value="${ordered_article_id}"]`);
 
@@ -78,6 +81,7 @@ function updateOrCreateDOM(orderId, pizzaName, statusCode, ordered_article_id)
 
 function getStatusText(statusCode) 
 {
+    "use strict";
     const statusDict = 
     {
         0: "Zubereitung",
