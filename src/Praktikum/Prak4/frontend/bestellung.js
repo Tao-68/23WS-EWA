@@ -1,7 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
  "use strict";
-  var pizzaDict={ "8.57":1, "12.5":1,"11.99":1, "9.99":1, "8.5":1,"14.4":1,"13.99":1,"7.5":1,"12.99":1, "11.39":1}; //is a dictionary that maps the price of a pizza to the number of times it has been added to the cart
+  var pizzaDict={}; //is a dictionary that maps the price of a pizza to the number of times it has been added to the cart
+    function updatePizzaDict() {
+      fetch('BestellungStatus.php')
+          .then(response => response.json())
+          .then(data => {
+              // Assuming data is an array of pizzas with price as keys
+              data.forEach(pizza => {
+                  pizzaDict[pizza.price] = 1; // Assuming initial count is 1
+              });
 
+              // Now, pizzaDict is dynamically filled based on the data from the server
+              console.log('Updated pizzaDict:', pizzaDict);
+          })
+          .catch(error => {
+              console.error('Error fetching data from BestellungStatus.php:', error);
+          });
+  }
+  updatePizzaDict();
+// Call the function to update pizzaDict on page load
+updatePizzaDict();
   const pizzaOrderForm = document.forms['pizzaOrderForm'];
   const submitOrder = document.querySelector('input[name="submitOrder"]'); 
   //const submitOrder = document.getElementsByName('submitOrder')[0]; //since we get a NodeListOf<>, we have to use indexing here
